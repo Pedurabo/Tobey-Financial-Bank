@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Dashboard - Modern Banking{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Welcome Message -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card bg-primary text-white">
+        <div class="card-body">
+          <h2 class="mb-0"><i class="fas fa-home me-2"></i>Welcome back, {{ profile.name.split()[0] if profile.name and ' ' in profile.name else profile.name }}! 👋</h2>
+          <p class="mb-0 mt-2">Manage your accounts, track transactions, and access banking services.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notifications -->
+  {% if notifications %}
+  <div class="row mb-3">
+    <div class="col-12">
+      {% for n in notifications %}
+        <div class="alert alert-{{ 'warning' if n.type == 'alert' else 'info' }} alert-dismissible fade show" role="alert">
+          <i class="fas fa-bell me-2"></i>{{ n.message }} <small class="text-muted">({{ n.date }})</small>
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Accounts Switcher & Balances -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="d-flex flex-wrap gap-3">
+        {% for acc in accounts %}
+        <div class="card shadow-sm flex-grow-1" style="min-width:220px;">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">{{ acc.type }} Account</h6>
+                <div class="text-muted small">{{ acc.number }}</div>
+              </div>
+              <span class="badge bg-{{ 'success' if acc.status == 'Active' else 'secondary' }}">{{ acc.status }}</span>
+            </div>
+            <h4 class="mt-3 mb-0">${{ "{:,.2f}".format(acc.balance) }}</h4>
+            <div class="text-muted">{{ acc.currency }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body">
+          <div class="row g-3 text-center">
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#transferModal"><i class="fas fa-exchange-alt fa-2x mb-2"></i><br>Transfer</button>
+            </div>
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-success w-100" data-bs-toggle="modal" data-bs-target="#depositModal"><i class="fas fa-plus-circle fa-2x mb-2"></i><br>Deposit</button>
+            </div>
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-warning w-100" data-bs-toggle="modal" data-bs-target="#withdrawModal"><i class="fas fa-minus-circle fa-2x mb-2"></i><br>Withdraw</button>
+            </div>
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-info w-100" data-bs-toggle="modal" data-bs-target="#loanModal"><i class="fas fa-hand-holding-usd fa-2x mb-2"></i><br>Apply Loan</button>
+            </div>
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-secondary w-100" data-bs-toggle="modal" data-bs-target="#payBillModal"><i class="fas fa-file-invoice-dollar fa-2x mb-2"></i><br>Pay Bill</button>
+            </div>
+            <div class="col-6 col-md-2">
+              <button class="btn btn-outline-dark w-100" data-bs-toggle="modal" data-bs-target="#addCardModal"><i class="fas fa-credit-card fa-2x mb-2"></i><br>Add Card</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Main Column -->
+    <div class="col-lg-8 mb-4">
+      <!-- Recent Transactions -->
+      <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="fas fa-history text-info"></i> Recent Transactions</h5>
+          <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#allTransactionsModal">View All</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Account</th>
+                  <th>Type</th>
+                  <th>Description</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for txn in recent_transactions %}
+                <tr>
+                  <td>{{ txn.date }}</td>
+                  <td>{{ txn.account }}</td>
+                  <td><span class="badge bg-{{ 'success' if txn.amount > 0 else 'danger' }}">{{ txn.type }}</span></td>
+                  <td>{{ txn.description }}</td>
+                  <td class="text-end {{ 'text-success' if txn.amount > 0 else 'text-danger' }}">${{ "{:,.2f}".format(txn.amount) }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-chart-pie text-primary"></i> Analytics</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="fw-bold">Monthly Spending</div>
+              <div class="h4 text-danger">${{ analytics.monthly_spending }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <div class="fw-bold">Monthly Income</div>
+              <div class="h4 text-success">${{ analytics.monthly_income }}</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="fw-bold">Category Breakdown</div>
+            <ul class="list-group list-group-flush">
+              {% for cat, amt in analytics.category_breakdown.items() %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ cat }}
+                <span>${{ amt }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <div class="fw-bold mb-1">Savings Goal</div>
+            <div class="progress mb-1" style="height: 20px;">
+              <div class="progress-bar bg-success" role="progressbar" style="width: {{ (analytics.savings_goal.current / analytics.savings_goal.target * 100) | round(0) }}%">
+                ${{ analytics.savings_goal.current }} / ${{ analytics.savings_goal.target }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support Tickets -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-headset text-warning"></i> Support Tickets</div>
+        <div class="card-body">
+          {% if support_tickets %}
+            <ul class="list-group">
+              {% for t in support_tickets %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>{{ t.subject }}</span>
+                <span class="badge bg-{{ 'success' if t.status == 'Closed' else 'warning' }}">{{ t.status }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <div class="text-muted">No support tickets.</div>
+          {% endif %}
+          <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#supportModal"><i class="fas fa-plus"></i> New Ticket</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+      <!-- Cards -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-credit-card text-primary"></i> Cards</div>
+        <div class="card-body">
+          {% for card in cards %}
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <strong>{{ card.type }}</strong><br>
+              <small class="text-muted">{{ card.number }}</small>
+            </div>
+            <span class="badge bg-{{ 'success' if card.status == 'Active' else 'danger' }}">{{ card.status }}</span>
+          </div>
+          {% endfor %}
+          <button class="btn btn-sm btn-outline-dark mt-2 w-100" data-bs-toggle="modal" data-bs-target="#addCardModal"><i class="fas fa-plus"></i> Add Card</button>
+        </div>
+      </div>
+      <!-- Loans -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-hand-holding-usd text-info"></i> Loans</div>
+        <div class="card-body">
+          {% for loan in loans %}
+          <div class="mb-2">
+            <div class="d-flex justify-content-between">
+              <strong>{{ loan.type }}</strong>
+              <span class="badge bg-{{ 'success' if loan.status == 'Active' else 'warning' }}">{{ loan.status }}</span>
+            </div>
+            <small class="text-muted">Balance: ${{ "{:,.2f}".format(loan.balance) }} | EMI: ${{ loan.emi }} | Next Due: {{ loan.next_due }}</small>
+          </div>
+          {% endfor %}
+          <button class="btn btn-sm btn-outline-info mt-2 w-100" data-bs-toggle="modal" data-bs-target="#loanModal"><i class="fas fa-plus"></i> Apply Loan</button>
+        </div>
+      </div>
+      <!-- Payees & Billers -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-users text-secondary"></i> Payees & Billers</div>
+        <div class="card-body">
+          {% for payee in payees %}
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div>
+              <strong>{{ payee.name }}</strong><br>
+              <small class="text-muted">{{ payee.account }} ({{ payee.bank }})</small>
+            </div>
+            <button class="btn btn-sm btn-outline-primary">Pay</button>
+          </div>
+          {% endfor %}
+          <button class="btn btn-sm btn-outline-secondary mt-2 w-100" data-bs-toggle="modal" data-bs-target="#payBillModal"><i class="fas fa-plus"></i> Add Payee</button>
+        </div>
+      </div>
+      <!-- Profile -->
+      <div class="card mb-4">
+        <div class="card-header"><i class="fas fa-user text-dark"></i> Profile</div>
+        <div class="card-body">
+          <div class="fw-bold">{{ profile.name }}</div>
+          <div class="text-muted small">{{ profile.email }}</div>
+          <div class="text-muted small">{{ profile.phone }}</div>
+          <div class="text-muted small">{{ profile.address }}</div>
+          <div class="text-muted small">Last login: {{ profile.last_login }}</div>
+          <a href="/profile" class="btn btn-sm btn-outline-dark mt-2 w-100"><i class="fas fa-user-cog"></i> Manage Profile</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals (Transfer, Deposit, Withdraw, Loan, Pay Bill, Add Card, Support, All Transactions) -->
+  {% include 'customer_dashboard_modals.html' %}
+</div>
+{% endblock %} 

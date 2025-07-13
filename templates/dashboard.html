@@ -1,0 +1,656 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Tobey Finance Bank{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="row mb-4 fade-in-up">
+    <div class="col-12">
+        <div class="card shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-white bg-opacity-25 rounded-circle p-3 me-3">
+                                <i class="fas fa-crown fa-2x"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title mb-1 fw-bold">
+                            Welcome back, Administrator!
+                                </h3>
+                                <p class="mb-0 opacity-75">Let's make today productive</p>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-user-circle fa-lg me-2 opacity-75"></i>
+                                    <div>
+                                        <div class="fw-semibold">{{ current_user.employee.first_name }} {{ current_user.employee.last_name }}</div>
+                                        <small class="opacity-75">{{ current_user.department.value }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-shield-alt fa-lg me-2 opacity-75"></i>
+                                    <div>
+                                        <div class="fw-semibold">{{ current_user.role.value.title() }} Access</div>
+                                        <small class="opacity-75">Full System Privileges</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 d-flex align-items-center">
+                            <i class="fas fa-clock me-2 opacity-75"></i>
+                            <span id="currentDateTime" class="fw-medium"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="position-relative">
+                            <div class="bg-white bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center" 
+                                 style="width: 120px; height: 120px;">
+                                <i class="fas fa-chart-line fa-3x opacity-75"></i>
+                            </div>
+                            <div class="position-absolute top-0 end-0 bg-success rounded-circle d-flex align-items-center justify-content-center" 
+                                 style="width: 30px; height: 30px;">
+                                <i class="fas fa-check fa-sm"></i>
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <div class="fw-bold fs-5">System Online</div>
+                            <small class="opacity-75">All services operational</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Status Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-left-success shadow">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            System Status
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">
+                            <i class="fas fa-check-circle text-success mr-2"></i>
+                            All systems operational
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="text-success">
+                            <i class="fas fa-server fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-users mr-1"></i>
+                            Active Users: <span class="font-weight-bold">{{ total_employees or 0 }}</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Security Level: <span class="font-weight-bold text-success">High</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-database mr-1"></i>
+                            Database: <span class="font-weight-bold text-success">Connected</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Navigation -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Navigation</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('manage_employees') }}" class="btn btn-outline-primary btn-block">
+                            <i class="fas fa-users mr-2"></i>Manage Employees
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('audit_logs') }}" class="btn btn-outline-info btn-block">
+                            <i class="fas fa-history mr-2"></i>Audit Logs
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('accounts_dashboard') }}" class="btn btn-outline-success btn-block">
+                            <i class="fas fa-calculator mr-2"></i>Accounts
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('loans_dashboard') }}" class="btn btn-outline-warning btn-block">
+                            <i class="fas fa-hand-holding-usd mr-2"></i>Loans
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Employees
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ employee_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Active Accounts
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_accounts }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Recent Logins
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ recent_logins }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            System Status
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Online</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Specific Dashboards -->
+{% if current_user.department.value == 'Admin/HR Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">HR Management</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('manage_employees') }}" class="btn btn-primary btn-block mb-3">
+                            <i class="fas fa-users mr-2"></i>Manage Employees
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('audit_logs') }}" class="btn btn-info btn-block mb-3">
+                            <i class="fas fa-history mr-2"></i>View Audit Logs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Teller/Transaction Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Teller Operations</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="{{ url_for('teller_dashboard') }}" class="btn btn-success btn-block mb-3">
+                            <i class="fas fa-cash-register mr-2"></i>Teller Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{ url_for('audit_logs') }}" class="btn btn-info btn-block mb-3">
+                            <i class="fas fa-history mr-2"></i>Transaction Logs
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Accounts Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Accounts Management</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('accounts_dashboard') }}" class="btn btn-success btn-block">
+                    <i class="fas fa-calculator mr-2"></i>Accounts Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Loans Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Loans Management</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('loans_dashboard') }}" class="btn btn-warning btn-block">
+                    <i class="fas fa-hand-holding-usd mr-2"></i>Loans Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Customer Service Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Customer Service</h6>
+            </div>
+            <div class="card-body">
+                <a href="{{ url_for('customer_service_dashboard') }}" class="btn btn-info btn-block">
+                    <i class="fas fa-headset mr-2"></i>Customer Service Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Risk Management Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Risk Management Operations</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('risk_dashboard') }}" class="btn btn-danger btn-block">
+                            <i class="fas fa-shield-alt mr-2"></i>Risk Management Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('audit_logs') }}" class="btn btn-warning btn-block">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Risk Alerts
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-chart-line mr-1"></i>
+                            Current VaR: <span class="font-weight-bold text-danger">$2.85M</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-shield-alt mr-1"></i>
+                            Compliance: <span class="font-weight-bold text-success">94.2%</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-users mr-1"></i>
+                            High Risk: <span class="font-weight-bold text-warning">127 accounts</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if current_user.department.value == 'Treasury Department' %}
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <h6 class="m-0 font-weight-bold">Treasury Management Operations</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('treasury_dashboard') }}" class="btn btn-primary btn-block">
+                            <i class="fas fa-chart-line mr-2"></i>Treasury Dashboard
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <a href="{{ url_for('audit_logs') }}" class="btn btn-info btn-block">
+                            <i class="fas fa-certificate mr-2"></i>Treasury Bonds
+                        </a>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-coins mr-1"></i>
+                            Total Assets: <span class="font-weight-bold text-success">$2.85B</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-percentage mr-1"></i>
+                            NIM: <span class="font-weight-bold text-info">2.84%</span>
+                        </small>
+                    </div>
+                    <div class="col-md-4">
+                        <small class="text-muted">
+                            <i class="fas fa-chart-bar mr-1"></i>
+                            Profit Opp: <span class="font-weight-bold text-warning">$26.5M</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Activity -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Activity</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>User</th>
+                                <th>Action</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in recent_activities %}
+                            <tr>
+                                <td>{{ activity.timestamp }}</td>
+                                <td>{{ activity.user }}</td>
+                                <td>{{ activity.action }}</td>
+                                <td>{{ activity.details }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Enhanced Dashboard Functionality
+function updateDateTime() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit',
+        timeZoneName: 'short'
+    };
+    const dateElement = document.getElementById('currentDateTime');
+    if (dateElement) {
+        dateElement.textContent = now.toLocaleDateString('en-US', options);
+}
+}
+
+class DashboardManager {
+    constructor() {
+        this.init();
+    }
+
+    init() {
+        this.updateDateTime();
+        this.addInteractiveElements();
+        this.addDashboardEnhancements();
+    }
+
+    updateDateTime() {
+updateDateTime();
+setInterval(updateDateTime, 1000);
+    }
+
+    addInteractiveElements() {
+        // Add hover effects to cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = '';
+            });
+        });
+
+        // Add click-to-refresh functionality to tables
+        document.querySelectorAll('.table').forEach(table => {
+            const refreshBtn = document.createElement('button');
+            refreshBtn.className = 'btn btn-outline-primary btn-sm position-absolute';
+            refreshBtn.style.cssText = 'top: 10px; right: 10px; z-index: 10;';
+            refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            
+            const tableContainer = table.closest('.card');
+            if (tableContainer) {
+                tableContainer.style.position = 'relative';
+                tableContainer.appendChild(refreshBtn);
+                
+                refreshBtn.addEventListener('click', () => {
+                    this.refreshTable(table, refreshBtn);
+                });
+            }
+        });
+    }
+
+    refreshTable(table, button) {
+        const icon = button.querySelector('i');
+        icon.style.animation = 'spin 1s linear infinite';
+        button.disabled = true;
+        
+        // Simulate data refresh
+        setTimeout(() => {
+            icon.style.animation = '';
+            button.disabled = false;
+            
+            if (window.notificationManager) {
+                window.notificationManager.success('Table data refreshed!', 2000);
+            }
+        }, 1500);
+    }
+
+    addDashboardEnhancements() {
+        // Add keyboard shortcuts tooltip
+        const tooltip = document.createElement('div');
+        tooltip.id = 'dashboardTooltip';
+        tooltip.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 15px var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+            max-width: 250px;
+        `;
+        
+        tooltip.innerHTML = `
+            <div style="font-weight: 600; margin-bottom: 8px; color: var(--text-primary);">
+                <i class="fas fa-lightbulb me-2"></i>Dashboard Tips
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-secondary);">
+                • Press <kbd>Ctrl+D</kbd> to toggle dark theme<br>
+                • Hover over cards for interactions<br>
+                • Click refresh icons to update data<br>
+                • Use the theme toggle in top-right corner
+            </div>
+        `;
+        
+        document.body.appendChild(tooltip);
+        
+        // Show tooltip briefly on load
+        setTimeout(() => {
+            tooltip.style.opacity = '1';
+            tooltip.style.transform = 'translateY(0)';
+            
+            setTimeout(() => {
+                tooltip.style.opacity = '0';
+                tooltip.style.transform = 'translateY(20px)';
+            }, 5000);
+        }, 2000);
+
+        // Progressive enhancement
+        this.addProgressiveEnhancements();
+    }
+
+    addProgressiveEnhancements() {
+        // Add subtle animations to elements
+        document.querySelectorAll('.card').forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // Add real-time status indicators
+        this.addStatusIndicators();
+    }
+
+    addStatusIndicators() {
+        // Add a live status indicator to the welcome card
+        const welcomeCard = document.querySelector('.card');
+        if (welcomeCard) {
+            const statusIndicator = document.createElement('div');
+            statusIndicator.style.cssText = `
+                position: absolute;
+                top: 15px;
+                right: 15px;
+                width: 12px;
+                height: 12px;
+                background: #28a745;
+                border-radius: 50%;
+                box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.3);
+                animation: pulse 2s infinite;
+            `;
+            
+            const pulseStyle = document.createElement('style');
+            pulseStyle.textContent = `
+                @keyframes pulse {
+                    0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+                    70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+                    100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+                }
+            `;
+            
+            document.head.appendChild(pulseStyle);
+            welcomeCard.appendChild(statusIndicator);
+        }
+    }
+}
+
+// Initialize dashboard when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    window.dashboardManager = new DashboardManager();
+    
+    // Add global keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            if (window.notificationManager) {
+                window.notificationManager.info('Dashboard refreshed!', 2000);
+            }
+        }
+    });
+    
+    console.log('🚀 Enhanced Dashboard with Dark Theme Support');
+});
+</script>
+
+{% endblock %} 

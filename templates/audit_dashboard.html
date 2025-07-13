@@ -1,0 +1,780 @@
+{% extends "base.html" %}
+
+{% block title %}Audit and Compliance Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-0">Audit and Compliance Dashboard</h1>
+            <p class="text-muted">Comprehensive audit trail management and regulatory compliance monitoring</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-primary" onclick="showAuditTrailModal()">
+                <i class="fas fa-search"></i> Audit Trail
+            </button>
+            <button class="btn btn-success" onclick="showComplianceReportModal()">
+                <i class="fas fa-chart-bar"></i> Compliance Report
+            </button>
+            <button class="btn btn-warning" onclick="showRegulatoryAlertModal()">
+                <i class="fas fa-exclamation-triangle"></i> Regulatory Alert
+            </button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Compliance Score</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ audit_stats.compliance_score }}%</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shield-alt fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Audit Records</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ audit_stats.total_audit_records }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Regulatory Alerts</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ audit_stats.regulatory_alerts|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Pending Reviews</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ audit_stats.pending_reviews|length }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Audit Trail Section -->
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Audit Trail</h6>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" onclick="refreshAuditTrail()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-sm btn-outline-success" onclick="showExportAuditModal()">
+                            <i class="fas fa-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="auditTrailTable">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>User</th>
+                                    <th>Action</th>
+                                    <th>Department</th>
+                                    <th>Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditTrailBody">
+                                <!-- Audit trail data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compliance Overview -->
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Compliance Overview</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6>Regulatory Alerts</h6>
+                        <div id="regulatoryAlerts">
+                            <!-- Regulatory alerts will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Pending Assessments</h6>
+                        <div id="pendingAssessments">
+                            <!-- Pending assessments will be loaded here -->
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>Risk Assessments</h6>
+                        <div id="riskAssessments">
+                            <!-- Risk assessments will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Internal Audit Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Internal Audit Reviews</h6>
+                    <button class="btn btn-primary btn-sm" onclick="showInternalAuditModal()">
+                        <i class="fas fa-plus"></i> New Audit Review
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="internalAuditTable">
+                            <thead>
+                                <tr>
+                                    <th>Review ID</th>
+                                    <th>Department</th>
+                                    <th>Audit Type</th>
+                                    <th>Status</th>
+                                    <th>Start Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="internalAuditBody">
+                                <!-- Internal audit data will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Audit Trail Modal -->
+<div class="modal fade" id="auditTrailModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Audit Trail Search</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="auditTrailForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">User</label>
+                                <input type="text" class="form-control" name="user" placeholder="Filter by user">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Action</label>
+                                <input type="text" class="form-control" name="action" placeholder="Filter by action">
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <select class="form-control" name="department">
+                                    <option value="">All Departments</option>
+                                    <option value="Accounts Department">Accounts Department</option>
+                                    <option value="Loans Department">Loans Department</option>
+                                    <option value="Customer Service Department">Customer Service Department</option>
+                                    <option value="Admin/HR Department">Admin/HR Department</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="searchAuditTrail()">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Compliance Report Modal -->
+<div class="modal fade" id="complianceReportModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Generate Compliance Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="complianceReportForm">
+                    <div class="mb-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-control" name="report_type" required>
+                            <option value="overall">Overall Compliance</option>
+                            <option value="department">Department Specific</option>
+                            <option value="regulatory">Regulatory Compliance</option>
+                            <option value="risk">Risk Assessment</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-control" name="department">
+                            <option value="all">All Departments</option>
+                            <option value="Accounts Department">Accounts Department</option>
+                            <option value="Loans Department">Loans Department</option>
+                            <option value="Customer Service Department">Customer Service Department</option>
+                            <option value="Admin/HR Department">Admin/HR Department</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="generateComplianceReport()">Generate Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Regulatory Alert Modal -->
+<div class="modal fade" id="regulatoryAlertModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Regulatory Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="regulatoryAlertForm">
+                    <div class="mb-3">
+                        <label class="form-label">Alert Type</label>
+                        <select class="form-control" name="alert_type" required>
+                            <option value="aml">AML Requirements</option>
+                            <option value="kyc">KYC Guidelines</option>
+                            <option value="privacy">Privacy Regulations</option>
+                            <option value="lending">Lending Regulations</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Severity</label>
+                        <select class="form-control" name="severity" required>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="critical">Critical</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input type="text" class="form-control" name="title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-control" name="description" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-control" name="due_date" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="createRegulatoryAlert()">Create Alert</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Internal Audit Modal -->
+<div class="modal fade" id="internalAuditModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Internal Audit Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="internalAuditForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Department</label>
+                                <select class="form-control" name="department" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Accounts Department">Accounts Department</option>
+                                    <option value="Loans Department">Loans Department</option>
+                                    <option value="Customer Service Department">Customer Service Department</option>
+                                    <option value="Admin/HR Department">Admin/HR Department</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Audit Type</label>
+                                <select class="form-control" name="audit_type" required>
+                                    <option value="operational">Operational</option>
+                                    <option value="compliance">Compliance</option>
+                                    <option value="financial">Financial</option>
+                                    <option value="it">IT Security</option>
+                                    <option value="risk">Risk Assessment</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Scope</label>
+                        <textarea class="form-control" name="scope" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Objectives</label>
+                        <textarea class="form-control" name="objectives" rows="3" required></textarea>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Risk Assessment</label>
+                                <select class="form-control" name="risk_assessment">
+                                    <option value="low">Low</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Estimated Completion</label>
+                                <input type="date" class="form-control" name="estimated_completion" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createInternalAudit()">Create Audit Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Export Audit Modal -->
+<div class="modal fade" id="exportAuditModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Export Audit Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="exportAuditForm">
+                    <div class="mb-3">
+                        <label class="form-label">Report Type</label>
+                        <select class="form-control" name="report_type" required>
+                            <option value="comprehensive">Comprehensive</option>
+                            <option value="summary">Summary</option>
+                            <option value="compliance">Compliance Focused</option>
+                            <option value="security">Security Focused</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date Range</label>
+                        <select class="form-control" name="date_range" required>
+                            <option value="last_7_days">Last 7 Days</option>
+                            <option value="last_30_days">Last 30 Days</option>
+                            <option value="last_90_days">Last 90 Days</option>
+                            <option value="last_year">Last Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Format</label>
+                        <select class="form-control" name="format" required>
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="exportAuditReport()">Export Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize dashboard
+document.addEventListener('DOMContentLoaded', function() {
+    loadAuditTrail();
+    loadInternalAudits();
+    loadComplianceData();
+});
+
+// Load audit trail
+function loadAuditTrail() {
+    fetch('/api/audit/trail')
+        .then(response => response.json())
+        .then(data => {
+            displayAuditTrail(data.audit_trail);
+        })
+        .catch(error => {
+            console.error('Error loading audit trail:', error);
+        });
+}
+
+// Display audit trail
+function displayAuditTrail(auditTrail) {
+    const tbody = document.getElementById('auditTrailBody');
+    tbody.innerHTML = '';
+    
+    auditTrail.forEach(log => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${new Date(log.timestamp).toLocaleString()}</td>
+            <td>${log.user_id}</td>
+            <td>${log.action}</td>
+            <td>${log.department || 'N/A'}</td>
+            <td>${JSON.stringify(log.details)}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Load internal audits
+function loadInternalAudits() {
+    // Mock data for now
+    const mockAudits = [
+        {
+            review_id: 'IA-20250115001',
+            department: 'Accounts Department',
+            audit_type: 'operational',
+            status: 'in_progress',
+            start_date: '2025-01-10'
+        }
+    ];
+    
+    displayInternalAudits(mockAudits);
+}
+
+// Display internal audits
+function displayInternalAudits(audits) {
+    const tbody = document.getElementById('internalAuditBody');
+    tbody.innerHTML = '';
+    
+    audits.forEach(audit => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${audit.review_id}</td>
+            <td>${audit.department}</td>
+            <td>${audit.audit_type}</td>
+            <td><span class="badge bg-warning">${audit.status}</span></td>
+            <td>${audit.start_date}</td>
+            <td>
+                <button class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-eye"></i> View
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Load compliance data
+function loadComplianceData() {
+    // Load regulatory alerts
+    const alerts = {{ audit_stats.regulatory_alerts|tojson }};
+    displayRegulatoryAlerts(alerts);
+    
+    // Load pending assessments
+    const assessments = {{ audit_stats.pending_reviews|tojson }};
+    displayPendingAssessments(assessments);
+    
+    // Load risk assessments
+    const risks = {{ audit_stats.risk_assessments|tojson }};
+    displayRiskAssessments(risks);
+}
+
+// Display regulatory alerts
+function displayRegulatoryAlerts(alerts) {
+    const container = document.getElementById('regulatoryAlerts');
+    container.innerHTML = '';
+    
+    alerts.forEach(alert => {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-warning mb-2`;
+        alertDiv.innerHTML = `
+            <strong>${alert.title}</strong><br>
+            <small>Due: ${alert.due_date}</small>
+        `;
+        container.appendChild(alertDiv);
+    });
+}
+
+// Display pending assessments
+function displayPendingAssessments(assessments) {
+    const container = document.getElementById('pendingAssessments');
+    container.innerHTML = '';
+    
+    assessments.forEach(assessment => {
+        const assessmentDiv = document.createElement('div');
+        assessmentDiv.className = 'card mb-2';
+        assessmentDiv.innerHTML = `
+            <div class="card-body p-2">
+                <h6 class="card-title mb-1">${assessment.review_id}</h6>
+                <p class="card-text small mb-1">${assessment.department}</p>
+                <small class="text-muted">Due: ${assessment.due_date}</small>
+            </div>
+        `;
+        container.appendChild(assessmentDiv);
+    });
+}
+
+// Display risk assessments
+function displayRiskAssessments(risks) {
+    const container = document.getElementById('riskAssessments');
+    container.innerHTML = '';
+    
+    risks.forEach(risk => {
+        const riskDiv = document.createElement('div');
+        riskDiv.className = 'card mb-2';
+        riskDiv.innerHTML = `
+            <div class="card-body p-2">
+                <h6 class="card-title mb-1">${risk.assessment_id}</h6>
+                <p class="card-text small mb-1">${risk.department}</p>
+                <span class="badge bg-warning">${risk.risk_level}</span>
+            </div>
+        `;
+        container.appendChild(riskDiv);
+    });
+}
+
+// Modal functions
+function showAuditTrailModal() {
+    const modal = new bootstrap.Modal(document.getElementById('auditTrailModal'));
+    modal.show();
+}
+
+function showComplianceReportModal() {
+    const modal = new bootstrap.Modal(document.getElementById('complianceReportModal'));
+    modal.show();
+}
+
+function showRegulatoryAlertModal() {
+    const modal = new bootstrap.Modal(document.getElementById('regulatoryAlertModal'));
+    modal.show();
+}
+
+function showInternalAuditModal() {
+    const modal = new bootstrap.Modal(document.getElementById('internalAuditModal'));
+    modal.show();
+}
+
+function showExportAuditModal() {
+    const modal = new bootstrap.Modal(document.getElementById('exportAuditModal'));
+    modal.show();
+}
+
+// Search audit trail
+function searchAuditTrail() {
+    const form = document.getElementById('auditTrailForm');
+    const formData = new FormData(form);
+    const params = new URLSearchParams();
+    
+    for (let [key, value] of formData.entries()) {
+        if (value) {
+            params.append(key, value);
+        }
+    }
+    
+    fetch(`/api/audit/trail?${params.toString()}`)
+        .then(response => response.json())
+        .then(data => {
+            displayAuditTrail(data.audit_trail);
+            bootstrap.Modal.getInstance(document.getElementById('auditTrailModal')).hide();
+        })
+        .catch(error => {
+            console.error('Error searching audit trail:', error);
+        });
+}
+
+// Generate compliance report
+function generateComplianceReport() {
+    const form = document.getElementById('complianceReportForm');
+    const formData = new FormData(form);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    fetch('/api/compliance/report', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Compliance report generated successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('complianceReportModal')).hide();
+    })
+    .catch(error => {
+        console.error('Error generating compliance report:', error);
+    });
+}
+
+// Create regulatory alert
+function createRegulatoryAlert() {
+    const form = document.getElementById('regulatoryAlertForm');
+    const formData = new FormData(form);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    fetch('/api/regulatory/alert', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Regulatory alert created successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('regulatoryAlertModal')).hide();
+        loadComplianceData();
+    })
+    .catch(error => {
+        console.error('Error creating regulatory alert:', error);
+    });
+}
+
+// Create internal audit
+function createInternalAudit() {
+    const form = document.getElementById('internalAuditForm');
+    const formData = new FormData(form);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    fetch('/api/audit/internal/review', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Internal audit review created successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('internalAuditModal')).hide();
+        loadInternalAudits();
+    })
+    .catch(error => {
+        console.error('Error creating internal audit:', error);
+    });
+}
+
+// Export audit report
+function exportAuditReport() {
+    const form = document.getElementById('exportAuditForm');
+    const formData = new FormData(form);
+    const data = {};
+    
+    for (let [key, value] of formData.entries()) {
+        data[key] = value;
+    }
+    
+    fetch('/api/audit/export', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('Audit report exported successfully!');
+        bootstrap.Modal.getInstance(document.getElementById('exportAuditModal')).hide();
+    })
+    .catch(error => {
+        console.error('Error exporting audit report:', error);
+    });
+}
+
+// Refresh audit trail
+function refreshAuditTrail() {
+    loadAuditTrail();
+}
+</script>
+{% endblock %} 

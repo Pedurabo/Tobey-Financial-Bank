@@ -1,0 +1,1010 @@
+{% extends "base.html" %}
+
+{% block title %}Loans Dashboard - Tobey Finance Bank{% endblock %}
+
+{% block page_title %}Loans Department Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Welcome Message Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card bg-gradient-warning text-white shadow">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="card-title mb-2">
+                <i class="fas fa-hand-holding-usd me-2"></i>
+                Welcome to Loans Management Operations!
+              </h4>
+              <h5 class="mb-1">
+                {{ current_user.employee.first_name }} {{ current_user.employee.last_name }}
+              </h5>
+              <p class="card-text mb-2">
+                <i class="fas fa-building me-2"></i>{{ current_user.department.value }} | 
+                <i class="fas fa-user-tie me-2"></i>{{ current_user.role.value.title() }} Access
+              </p>
+              <p class="card-text mb-0">
+                <i class="fas fa-chart-line me-2"></i>
+                Managing loan applications, approvals, and portfolio
+              </p>
+            </div>
+            <div class="col-4 text-end">
+              <div class="text-white-50">
+                <i class="fas fa-coins fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Loans</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_loans }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-file-alt fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Active Loans</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_loans }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Pending Applications</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_applications }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-clock fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Portfolio</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "{:,.0f}".format(total_portfolio_value) }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loan Operations -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0"><i class="fas fa-file-alt me-2"></i>Loan Applications</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success btn-sm w-100 mb-2" onclick="showLoanApplicationModal()">
+            <i class="fas fa-plus me-2"></i>New Application
+          </button>
+          <button class="btn btn-warning btn-sm w-100" onclick="showLoanProcessingModal()">
+            <i class="fas fa-cogs me-2"></i>Process Application
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0"><i class="fas fa-hand-holding-usd me-2"></i>Disbursement</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary btn-sm w-100 mb-2" onclick="showLoanDisbursementModal()">
+            <i class="fas fa-money-check-alt me-2"></i>Disburse Loan
+          </button>
+          <button class="btn btn-info btn-sm w-100" onclick="showLoanPaymentModal()">
+            <i class="fas fa-credit-card me-2"></i>Process Payment
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+          <h6 class="mb-0"><i class="fas fa-edit me-2"></i>Loan Management</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-warning btn-sm w-100 mb-2" onclick="showLoanModificationModal()">
+            <i class="fas fa-edit me-2"></i>Modify Loan
+          </button>
+          <button class="btn btn-danger btn-sm w-100" onclick="showLoanClosureModal()">
+            <i class="fas fa-times-circle me-2"></i>Close Loan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Additional Operations -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-white">
+          <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Defaults</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-danger btn-sm w-100" onclick="showDefaultManagementModal()">
+            <i class="fas fa-flag me-2"></i>Manage Defaults
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0"><i class="fas fa-tools me-2"></i>Restructuring</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-info btn-sm w-100" onclick="showLoanRestructureModal()">
+            <i class="fas fa-wrench me-2"></i>Restructure Loan
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h6 class="mb-0"><i class="fas fa-user-check me-2"></i>Credit Assessment</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-secondary btn-sm w-100" onclick="showCreditAssessmentModal()">
+            <i class="fas fa-search me-2"></i>Credit Check
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h6 class="mb-0"><i class="fas fa-home me-2"></i>Collateral</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-dark btn-sm w-100" onclick="showCollateralEvaluationModal()">
+            <i class="fas fa-calculator me-2"></i>Evaluate
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Analytics and Reports -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Analytics</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success btn-sm w-100 mb-2" onclick="showLoanAnalyticsModal()">
+            <i class="fas fa-analytics me-2"></i>View Analytics
+          </button>
+          <button class="btn btn-warning btn-sm w-100" onclick="showRiskAnalysisModal()">
+            <i class="fas fa-shield-alt me-2"></i>Risk Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h6 class="mb-0"><i class="fas fa-file-pdf me-2"></i>Reports</h6>
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary btn-sm w-100" onclick="showPortfolioReportModal()">
+            <i class="fas fa-file-alt me-2"></i>Portfolio Report
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Applications -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow">
+        <div class="card-header py-3">
+          <h6 class="m-0 font-weight-bold text-primary">Recent Loan Applications</h6>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Customer</th>
+                  <th>Amount</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for app in pending_applications %}
+                <tr>
+                  <td>{{ app.id }}</td>
+                  <td>{{ app.customer_name }}</td>
+                  <td>${{ "{:,.0f}".format(app.amount) }}</td>
+                  <td>{{ app.type }}</td>
+                  <td>
+                    <span class="badge badge-{% if app.status == 'approved' %}success{% elif app.status == 'pending' or app.status == 'underwriting' or app.status == 'credit_review' or app.status == 'documentation' %}warning{% else %}danger{% endif %}">
+                      {{ app.status|title }}
+                    </span>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal fade" id="loanApplicationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Loan Application</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanApplicationForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Customer Name</label>
+                <input type="text" class="form-control" id="customerName" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan Amount</label>
+                <input type="number" class="form-control" id="loanAmount" required>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan Type</label>
+                <select class="form-select" id="loanType" required>
+                  <option value="">Select Type</option>
+                  <option value="Personal">Personal</option>
+                  <option value="Mortgage">Mortgage</option>
+                  <option value="Business">Business</option>
+                  <option value="Auto">Auto</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Monthly Income</label>
+                <input type="number" class="form-control" id="monthlyIncome" required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitLoanApplication()">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanProcessingModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Process Loan Application</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanProcessingForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Application ID</label>
+                <input type="text" class="form-control" id="applicationId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Decision</label>
+                <select class="form-select" id="decision" required>
+                  <option value="">Select Decision</option>
+                  <option value="approved">Approved</option>
+                  <option value="rejected">Rejected</option>
+                  <option value="pending">Pending</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitLoanProcessing()">Process</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanDisbursementModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Disbursement</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanDisbursementForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="disburseLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Amount</label>
+                <input type="number" class="form-control" id="disbursementAmount" required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitLoanDisbursement()">Disburse</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanPaymentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Process Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanPaymentForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="paymentLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Payment Amount</label>
+                <input type="number" class="form-control" id="paymentAmount" required>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitLoanPayment()">Process</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanModificationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Modification</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanModificationForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="modifyLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Modification Type</label>
+                <select class="form-select" id="modificationType" required>
+                  <option value="">Select Type</option>
+                  <option value="rate_change">Rate Change</option>
+                  <option value="term_extension">Term Extension</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitLoanModification()">Modify</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanClosureModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Closure</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanClosureForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="closeLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Closure Type</label>
+                <select class="form-select" id="closureType" required>
+                  <option value="">Select Type</option>
+                  <option value="normal">Normal</option>
+                  <option value="prepayment">Prepayment</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="submitLoanClosure()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="defaultManagementModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Default Management</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="defaultManagementForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="defaultLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Default Type</label>
+                <select class="form-select" id="defaultType" required>
+                  <option value="">Select Type</option>
+                  <option value="missed_payment">Missed Payment</option>
+                  <option value="late_payment">Late Payment</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" onclick="submitDefaultManagement()">Record</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanRestructureModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Restructuring</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanRestructureForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan ID</label>
+                <input type="text" class="form-control" id="restructureLoanId" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Restructure Type</label>
+                <select class="form-select" id="restructureType" required>
+                  <option value="">Select Type</option>
+                  <option value="term_extension">Term Extension</option>
+                  <option value="payment_reduction">Payment Reduction</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info" onclick="submitLoanRestructure()">Restructure</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="loanAnalyticsModal" tabindex="-1">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Loan Analytics</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div id="analyticsContent">Loading analytics...</div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="portfolioReportModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Portfolio Report</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="portfolioReportForm">
+          <div class="mb-3">
+            <label class="form-label">Report Type</label>
+            <select class="form-select" id="reportType" required>
+              <option value="">Select Type</option>
+              <option value="portfolio_summary">Portfolio Summary</option>
+              <option value="performance_report">Performance Report</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="generatePortfolioReport()">Generate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="creditAssessmentModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Credit Assessment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="creditAssessmentForm">
+          <div class="mb-3">
+            <label class="form-label">Customer ID</label>
+            <input type="text" class="form-control" id="assessmentCustomerId" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" onclick="checkCreditScore()">Check Score</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="collateralEvaluationModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Collateral Evaluation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="collateralEvaluationForm">
+          <div class="mb-3">
+            <label class="form-label">Collateral Type</label>
+            <select class="form-select" id="collateralType" required>
+              <option value="">Select Type</option>
+              <option value="real_estate">Real Estate</option>
+              <option value="vehicle">Vehicle</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-dark" onclick="evaluateCollateral()">Evaluate</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="riskAnalysisModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Risk Analysis</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="riskAnalysisForm">
+          <div class="mb-3">
+            <label class="form-label">Loan ID</label>
+            <input type="text" class="form-control" id="riskLoanId" required>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-warning" onclick="performRiskAnalysis()">Analyze</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Modal Show Functions
+function showLoanApplicationModal() {
+    new bootstrap.Modal(document.getElementById('loanApplicationModal')).show();
+}
+
+function showLoanProcessingModal() {
+    new bootstrap.Modal(document.getElementById('loanProcessingModal')).show();
+}
+
+function showLoanDisbursementModal() {
+    new bootstrap.Modal(document.getElementById('loanDisbursementModal')).show();
+}
+
+function showLoanPaymentModal() {
+    new bootstrap.Modal(document.getElementById('loanPaymentModal')).show();
+}
+
+function showLoanModificationModal() {
+    new bootstrap.Modal(document.getElementById('loanModificationModal')).show();
+}
+
+function showLoanClosureModal() {
+    new bootstrap.Modal(document.getElementById('loanClosureModal')).show();
+}
+
+function showDefaultManagementModal() {
+    new bootstrap.Modal(document.getElementById('defaultManagementModal')).show();
+}
+
+function showLoanRestructureModal() {
+    new bootstrap.Modal(document.getElementById('loanRestructureModal')).show();
+}
+
+function showLoanAnalyticsModal() {
+    loadLoanAnalytics();
+    new bootstrap.Modal(document.getElementById('loanAnalyticsModal')).show();
+}
+
+function showPortfolioReportModal() {
+    new bootstrap.Modal(document.getElementById('portfolioReportModal')).show();
+}
+
+function showCreditAssessmentModal() {
+    new bootstrap.Modal(document.getElementById('creditAssessmentModal')).show();
+}
+
+function showCollateralEvaluationModal() {
+    new bootstrap.Modal(document.getElementById('collateralEvaluationModal')).show();
+}
+
+function showRiskAnalysisModal() {
+    new bootstrap.Modal(document.getElementById('riskAnalysisModal')).show();
+}
+
+// Form Submission Functions
+function submitLoanApplication() {
+    const formData = {
+        customer_name: document.getElementById('customerName').value,
+        loan_amount: parseFloat(document.getElementById('loanAmount').value),
+        loan_type: document.getElementById('loanType').value,
+        monthly_income: parseFloat(document.getElementById('monthlyIncome').value)
+    };
+
+    if (!validateLoanApplication(formData)) return;
+
+    fetch('/api/loans/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Application submitted successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('loanApplicationModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanProcessing() {
+    const formData = {
+        application_id: document.getElementById('applicationId').value,
+        decision: document.getElementById('decision').value
+    };
+
+    fetch('/api/loans/process', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Processing completed!');
+            bootstrap.Modal.getInstance(document.getElementById('loanProcessingModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanDisbursement() {
+    const formData = {
+        loan_id: document.getElementById('disburseLoanId').value,
+        disbursement_amount: parseFloat(document.getElementById('disbursementAmount').value)
+    };
+
+    fetch('/api/loans/disburse', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Disbursement completed!');
+            bootstrap.Modal.getInstance(document.getElementById('loanDisbursementModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanPayment() {
+    const formData = {
+        loan_id: document.getElementById('paymentLoanId').value,
+        payment_amount: parseFloat(document.getElementById('paymentAmount').value)
+    };
+
+    fetch('/api/loans/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Payment processed!');
+            bootstrap.Modal.getInstance(document.getElementById('loanPaymentModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanModification() {
+    const formData = {
+        loan_id: document.getElementById('modifyLoanId').value,
+        modification_type: document.getElementById('modificationType').value
+    };
+
+    fetch('/api/loans/modify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Modification completed!');
+            bootstrap.Modal.getInstance(document.getElementById('loanModificationModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanClosure() {
+    const formData = {
+        loan_id: document.getElementById('closeLoanId').value,
+        closure_type: document.getElementById('closureType').value
+    };
+
+    fetch('/api/loans/close', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Loan closed successfully!');
+            bootstrap.Modal.getInstance(document.getElementById('loanClosureModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitDefaultManagement() {
+    const formData = {
+        loan_id: document.getElementById('defaultLoanId').value,
+        default_type: document.getElementById('defaultType').value
+    };
+
+    fetch('/api/loans/default', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Default recorded!');
+            bootstrap.Modal.getInstance(document.getElementById('defaultManagementModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function submitLoanRestructure() {
+    const formData = {
+        loan_id: document.getElementById('restructureLoanId').value,
+        restructure_type: document.getElementById('restructureType').value
+    };
+
+    fetch('/api/loans/restructure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Restructuring completed!');
+            bootstrap.Modal.getInstance(document.getElementById('loanRestructureModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function loadLoanAnalytics() {
+    fetch('/api/loans/analytics')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('analyticsContent').innerHTML = 
+                '<h6>Portfolio Analytics</h6><p>Total Loans: ' + data.data.total_loans + '</p>' +
+                '<p>Active Loans: ' + data.data.active_loans + '</p>' +
+                '<p>Default Rate: ' + data.data.default_rate + '%</p>';
+        } else {
+            document.getElementById('analyticsContent').innerHTML = 'Error loading analytics';
+        }
+    });
+}
+
+function generatePortfolioReport() {
+    const formData = {
+        report_type: document.getElementById('reportType').value
+    };
+
+    fetch('/api/loans/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Report generated!');
+            bootstrap.Modal.getInstance(document.getElementById('portfolioReportModal')).hide();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    });
+}
+
+function checkCreditScore() {
+    alert('Credit score check initiated');
+}
+
+function evaluateCollateral() {
+    alert('Collateral evaluation completed');
+}
+
+function performRiskAnalysis() {
+    alert('Risk analysis completed');
+}
+
+function calculateLoanSchedule() {
+    return true;
+}
+
+function validateLoanApplication(data) {
+    if (!data.customer_name || !data.loan_amount || !data.loan_type || !data.monthly_income) {
+        alert('Please fill in all required fields');
+        return false;
+    }
+    return true;
+}
+</script>
+
+{% endblock %} 

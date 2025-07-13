@@ -1,0 +1,3832 @@
+{% extends "base.html" %}
+
+{% block title %}Accounts Dashboard - Tobey Finance Bank{% endblock %}
+
+{% block page_title %}Accounts Department Dashboard{% endblock %}
+
+{% block content %}
+<!-- Banking Statistics Cards -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Accounts</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_accounts }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-credit-card fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Active Accounts</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ active_accounts }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-check fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Pending Transactions</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_transactions }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Total Balance</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "{:,.2f}".format(total_balance) }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Banking Operations -->
+<div class="row">
+    <!-- Cash Operations -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-money-bill-wave me-2"></i>Cash Operations
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success btn-block w-100" onclick="showCashDepositModal()">
+                            <i class="fas fa-plus me-2"></i>Cash Deposit
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger btn-block w-100" onclick="showCashWithdrawalModal()">
+                            <i class="fas fa-minus me-2"></i>Cash Withdrawal
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showCashCountModal()">
+                            <i class="fas fa-calculator me-2"></i>Cash Count
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showCashTransferModal()">
+                            <i class="fas fa-exchange-alt me-2"></i>Cash Transfer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Check Operations -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-money-check me-2"></i>Check Operations
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success btn-block w-100" onclick="showCheckDepositModal()">
+                            <i class="fas fa-plus me-2"></i>Check Deposit
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showCheckCashingModal()">
+                            <i class="fas fa-money-bill me-2"></i>Check Cashing
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showCheckVerificationModal()">
+                            <i class="fas fa-search me-2"></i>Check Verification
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showCheckStopPaymentModal()">
+                            <i class="fas fa-ban me-2"></i>Stop Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Services -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-user-circle me-2"></i>Account Services
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-primary btn-block w-100" onclick="showNewAccountModal()">
+                            <i class="fas fa-plus me-2"></i>Open Account
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showAccountModificationModal()">
+                            <i class="fas fa-edit me-2"></i>Modify Account
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showStatementModal()">
+                            <i class="fas fa-file-alt me-2"></i>Print Statement
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger btn-block w-100" onclick="showAccountClosureModal()">
+                            <i class="fas fa-times me-2"></i>Close Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Services -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-credit-card me-2"></i>Payment Services
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success btn-block w-100" onclick="showBillPaymentModal()">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>Bill Payment
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showLoanPaymentModal()">
+                            <i class="fas fa-hand-holding-usd me-2"></i>Loan Payment
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showUtilityPaymentModal()">
+                            <i class="fas fa-bolt me-2"></i>Utility Payment
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showTaxPaymentModal()">
+                            <i class="fas fa-receipt me-2"></i>Tax Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Card Services -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-id-card me-2"></i>Card Services
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-primary btn-block w-100" onclick="showCardIssuanceModal()">
+                            <i class="fas fa-plus me-2"></i>Issue Card
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showCardReplacementModal()">
+                            <i class="fas fa-sync me-2"></i>Replace Card
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showPinChangeModal()">
+                            <i class="fas fa-key me-2"></i>Change PIN
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger btn-block w-100" onclick="showCardBlockModal()">
+                            <i class="fas fa-lock me-2"></i>Block Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Foreign Exchange -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-globe me-2"></i>Foreign Exchange
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-success btn-block w-100" onclick="showCurrencyExchangeModal()">
+                            <i class="fas fa-exchange-alt me-2"></i>Currency Exchange
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showWireTransferModal()">
+                            <i class="fas fa-paper-plane me-2"></i>Wire Transfer
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showForeignCheckModal()">
+                            <i class="fas fa-money-check-alt me-2"></i>Foreign Check
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showExchangeRateModal()">
+                            <i class="fas fa-chart-line me-2"></i>Exchange Rates
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Services -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-users me-2"></i>Customer Services
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-primary btn-block w-100" onclick="showCustomerLookupModal()">
+                            <i class="fas fa-search me-2"></i>Customer Lookup
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showAccountInquiryModal()">
+                            <i class="fas fa-question-circle me-2"></i>Account Inquiry
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showDocumentRequestModal()">
+                            <i class="fas fa-file me-2"></i>Document Request
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showCustomerUpdateModal()">
+                            <i class="fas fa-user-edit me-2"></i>Update Customer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Services -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-shield-alt me-2"></i>Security Services
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-danger btn-block w-100" onclick="showAccountFreezeModal()">
+                            <i class="fas fa-lock me-2"></i>Freeze Account
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showFraudReportModal()">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Report Fraud
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showSuspiciousActivityModal()">
+                            <i class="fas fa-eye me-2"></i>Suspicious Activity
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showSecurityAlertModal()">
+                            <i class="fas fa-bell me-2"></i>Security Alert
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reporting & Compliance -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-bar me-2"></i>Reporting & Compliance
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-primary btn-block w-100" onclick="showTransactionReportModal()">
+                            <i class="fas fa-file-alt me-2"></i>Transaction Report
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-info btn-block w-100" onclick="showCashFlowReportModal()">
+                            <i class="fas fa-chart-line me-2"></i>Cash Flow Report
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-warning btn-block w-100" onclick="showKycVerificationModal()">
+                            <i class="fas fa-user-check me-2"></i>KYC Verification
+                        </button>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <button class="btn btn-secondary btn-block w-100" onclick="showRegulatoryReportModal()">
+                            <i class="fas fa-clipboard-check me-2"></i>Regulatory Report
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Account Modal -->
+<div class="modal fade" id="newAccountModal" tabindex="-1" role="dialog" aria-labelledby="newAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newAccountModalLabel">Create New Bank Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="newAccountForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="accountHolder">Account Holder Name</label>
+                                <input type="text" class="form-control" id="accountHolder" name="accountHolder" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="accountType">Account Type</label>
+                                <select class="form-control" id="accountType" name="accountType" required>
+                                    <option value="">Select Account Type</option>
+                                    <option value="Savings">Savings Account</option>
+                                    <option value="Checking">Checking Account</option>
+                                    <option value="Business">Business Account</option>
+                                    <option value="Fixed">Fixed Deposit</option>
+                                    <option value="Current">Current Account</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="initialDeposit">Initial Deposit</label>
+                                <input type="number" class="form-control" id="initialDeposit" name="initialDeposit" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="address">Address</label>
+                                <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="createAccount()">Create Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Modal -->
+<div class="modal fade" id="transactionModal" tabindex="-1" role="dialog" aria-labelledby="transactionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionModalLabel">Process Transaction</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="transactionForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fromAccount">From Account</label>
+                                <select class="form-control" id="fromAccount" name="fromAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="transactionType">Transaction Type</label>
+                                <select class="form-control" id="transactionType" name="transactionType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Deposit">Deposit</option>
+                                    <option value="Withdrawal">Withdrawal</option>
+                                    <option value="Transfer">Transfer</option>
+                                    <option value="Payment">Payment</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="amount">Amount</label>
+                                <input type="number" class="form-control" id="amount" name="amount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="toAccount">To Account (for transfers)</label>
+                                <select class="form-control" id="toAccount" name="toAccount">
+                                    <option value="">Select Account (optional)</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="2" placeholder="Transaction description..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processTransaction()">Process Transaction</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Balance Check Modal -->
+<div class="modal fade" id="balanceModal" tabindex="-1" role="dialog" aria-labelledby="balanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="balanceModalLabel">Check Account Balance</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="checkAccount">Account Number</label>
+                    <select class="form-control" id="checkAccount" name="checkAccount" required>
+                        <option value="">Select Account</option>
+                        <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                        <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                        <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                    </select>
+                </div>
+                <div id="balanceResult" class="mt-3" style="display: none;">
+                    <div class="alert alert-info">
+                        <h6>Account Balance</h6>
+                        <p class="mb-0" id="balanceAmount"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="checkBalance()">Check Balance</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Modal -->
+<div class="modal fade" id="reportModal" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reportModalLabel">Generate Financial Report</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reportType">Report Type</label>
+                                <select class="form-control" id="reportType" name="reportType" required>
+                                    <option value="">Select Report Type</option>
+                                    <option value="Daily">Daily Transaction Report</option>
+                                    <option value="Weekly">Weekly Summary</option>
+                                    <option value="Monthly">Monthly Statement</option>
+                                    <option value="Quarterly">Quarterly Report</option>
+                                    <option value="Annual">Annual Report</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="reportDate">Report Date</label>
+                                <input type="date" class="form-control" id="reportDate" name="reportDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="startDate">Start Date</label>
+                                <input type="date" class="form-control" id="startDate" name="startDate">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="endDate">End Date</label>
+                                <input type="date" class="form-control" id="endDate" name="endDate">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="generateReport()">Generate Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cash Operations Modals -->
+<div class="modal fade" id="cashDepositModal" tabindex="-1" role="dialog" aria-labelledby="cashDepositModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashDepositModalLabel">Cash Deposit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cashDepositForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="depositAccount">Account Number</label>
+                                <select class="form-control" id="depositAccount" name="depositAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="depositAmount">Amount</label>
+                                <input type="number" class="form-control" id="depositAmount" name="depositAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="depositDenominations">Cash Denominations</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="small">$100 Bills</label>
+                                        <input type="number" class="form-control" name="hundreds" min="0" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small">$50 Bills</label>
+                                        <input type="number" class="form-control" name="fifties" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <label class="small">$20 Bills</label>
+                                        <input type="number" class="form-control" name="twenties" min="0" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small">$10 Bills</label>
+                                        <input type="number" class="form-control" name="tens" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <label class="small">$5 Bills</label>
+                                        <input type="number" class="form-control" name="fives" min="0" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small">$1 Bills</label>
+                                        <input type="number" class="form-control" name="ones" min="0" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="depositDescription">Description</label>
+                                <textarea class="form-control" id="depositDescription" name="depositDescription" rows="3" placeholder="Purpose of deposit..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="depositReceipt">Print Receipt</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="depositReceipt" name="depositReceipt" checked>
+                                    <label class="custom-control-label" for="depositReceipt">Print customer receipt</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processCashDeposit()">Process Deposit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="cashWithdrawalModal" tabindex="-1" role="dialog" aria-labelledby="cashWithdrawalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashWithdrawalModalLabel">Cash Withdrawal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cashWithdrawalForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="withdrawalAccount">Account Number</label>
+                                <select class="form-control" id="withdrawalAccount" name="withdrawalAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="withdrawalAmount">Amount</label>
+                                <input type="number" class="form-control" id="withdrawalAmount" name="withdrawalAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="withdrawalDenominations">Preferred Denominations</label>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label class="small">$100 Bills</label>
+                                        <input type="number" class="form-control" name="pref_hundreds" min="0" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small">$50 Bills</label>
+                                        <input type="number" class="form-control" name="pref_fifties" min="0" value="0">
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-6">
+                                        <label class="small">$20 Bills</label>
+                                        <input type="number" class="form-control" name="pref_twenties" min="0" value="0">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small">$10 Bills</label>
+                                        <input type="number" class="form-control" name="pref_tens" min="0" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="withdrawalReason">Reason for Withdrawal</label>
+                                <select class="form-control" id="withdrawalReason" name="withdrawalReason" required>
+                                    <option value="">Select Reason</option>
+                                    <option value="Personal">Personal Use</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="withdrawalId">Customer ID Verification</label>
+                                <input type="text" class="form-control" id="withdrawalId" name="withdrawalId" placeholder="Driver's License, Passport, etc." required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="processCashWithdrawal()">Process Withdrawal</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check Operations Modals -->
+<div class="modal fade" id="checkDepositModal" tabindex="-1" role="dialog" aria-labelledby="checkDepositModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkDepositModalLabel">Check Deposit</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="checkDepositForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkDepositAccount">Account Number</label>
+                                <select class="form-control" id="checkDepositAccount" name="checkDepositAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkAmount">Check Amount</label>
+                                <input type="number" class="form-control" id="checkAmount" name="checkAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkNumber">Check Number</label>
+                                <input type="text" class="form-control" id="checkNumber" name="checkNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="checkDate">Check Date</label>
+                                <input type="date" class="form-control" id="checkDate" name="checkDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="payorBank">Payor Bank</label>
+                                <input type="text" class="form-control" id="payorBank" name="payorBank" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="payorAccount">Payor Account</label>
+                                <input type="text" class="form-control" id="payorAccount" name="payorAccount" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="checkDescription">Description</label>
+                                <textarea class="form-control" id="checkDescription" name="checkDescription" rows="2" placeholder="Purpose of check deposit..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processCheckDeposit()">Process Check Deposit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Currency Exchange Modal -->
+<div class="modal fade" id="currencyExchangeModal" tabindex="-1" role="dialog" aria-labelledby="currencyExchangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="currencyExchangeModalLabel">Currency Exchange</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="currencyExchangeForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="fromCurrency">From Currency</label>
+                                <select class="form-control" id="fromCurrency" name="fromCurrency" required>
+                                    <option value="">Select Currency</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="JPY">JPY - Japanese Yen</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                    <option value="AUD">AUD - Australian Dollar</option>
+                                    <option value="CHF">CHF - Swiss Franc</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="toCurrency">To Currency</label>
+                                <select class="form-control" id="toCurrency" name="toCurrency" required>
+                                    <option value="">Select Currency</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="JPY">JPY - Japanese Yen</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                    <option value="AUD">AUD - Australian Dollar</option>
+                                    <option value="CHF">CHF - Swiss Franc</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exchangeAmount">Amount</label>
+                                <input type="number" class="form-control" id="exchangeAmount" name="exchangeAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exchangeRate">Exchange Rate</label>
+                                <input type="number" class="form-control" id="exchangeRate" name="exchangeRate" min="0" step="0.0001" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exchangeType">Exchange Type</label>
+                                <select class="form-control" id="exchangeType" name="exchangeType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Cash">Cash Exchange</option>
+                                    <option value="Account">Account Transfer</option>
+                                    <option value="Traveler">Traveler's Check</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="exchangePurpose">Purpose</label>
+                                <select class="form-control" id="exchangePurpose" name="exchangePurpose" required>
+                                    <option value="">Select Purpose</option>
+                                    <option value="Travel">Travel</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Investment">Investment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Exchange Rate Info:</strong> Rates are updated every 15 minutes. Commission may apply.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processCurrencyExchange()">Process Exchange</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Lookup Modal -->
+<div class="modal fade" id="customerLookupModal" tabindex="-1" role="dialog" aria-labelledby="customerLookupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerLookupModalLabel">Customer Lookup</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="customerLookupForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lookupType">Search By</label>
+                                <select class="form-control" id="lookupType" name="lookupType" required>
+                                    <option value="">Select Search Type</option>
+                                    <option value="account">Account Number</option>
+                                    <option value="name">Customer Name</option>
+                                    <option value="phone">Phone Number</option>
+                                    <option value="email">Email Address</option>
+                                    <option value="ssn">Social Security Number</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="lookupValue">Search Value</label>
+                                <input type="text" class="form-control" id="lookupValue" name="lookupValue" placeholder="Enter search value..." required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-primary" onclick="searchCustomer()">
+                                <i class="fas fa-search me-2"></i>Search Customer
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div id="customerSearchResults" class="mt-3" style="display: none;">
+                    <h6>Search Results</h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Account #</th>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Balance</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customerResultsBody">
+                                <!-- Results will be populated here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Freeze Modal -->
+<div class="modal fade" id="accountFreezeModal" tabindex="-1" role="dialog" aria-labelledby="accountFreezeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountFreezeModalLabel">Freeze Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="accountFreezeForm">
+                    <div class="form-group">
+                        <label for="freezeAccount">Account Number</label>
+                        <select class="form-control" id="freezeAccount" name="freezeAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                            <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                            <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="freezeReason">Reason for Freeze</label>
+                        <select class="form-control" id="freezeReason" name="freezeReason" required>
+                            <option value="">Select Reason</option>
+                            <option value="Suspicious Activity">Suspicious Activity</option>
+                            <option value="Fraud Alert">Fraud Alert</option>
+                            <option value="Court Order">Court Order</option>
+                            <option value="Customer Request">Customer Request</option>
+                            <option value="Regulatory Requirement">Regulatory Requirement</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="freezeDescription">Detailed Description</label>
+                        <textarea class="form-control" id="freezeDescription" name="freezeDescription" rows="3" placeholder="Provide detailed reason for account freeze..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="freezeDuration">Freeze Duration</label>
+                        <select class="form-control" id="freezeDuration" name="freezeDuration" required>
+                            <option value="">Select Duration</option>
+                            <option value="24h">24 Hours</option>
+                            <option value="72h">72 Hours</option>
+                            <option value="7d">7 Days</option>
+                            <option value="30d">30 Days</option>
+                            <option value="indefinite">Indefinite</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This action will immediately freeze all transactions on the account.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="processAccountFreeze()">Freeze Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cash Count Modal -->
+<div class="modal fade" id="cashCountModal" tabindex="-1" role="dialog" aria-labelledby="cashCountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashCountModalLabel">Cash Count & Verification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cashCountForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Cash Denominations</h6>
+                            <div class="form-group">
+                                <label for="countHundreds">$100 Bills</label>
+                                <input type="number" class="form-control" id="countHundreds" name="countHundreds" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="countFifties">$50 Bills</label>
+                                <input type="number" class="form-control" id="countFifties" name="countFifties" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="countTwenties">$20 Bills</label>
+                                <input type="number" class="form-control" id="countTwenties" name="countTwenties" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="countTens">$10 Bills</label>
+                                <input type="number" class="form-control" id="countTens" name="countTens" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="countFives">$5 Bills</label>
+                                <input type="number" class="form-control" id="countFives" name="countFives" min="0" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="countOnes">$1 Bills</label>
+                                <input type="number" class="form-control" id="countOnes" name="countOnes" min="0" value="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Count Summary</h6>
+                            <div class="alert alert-info">
+                                <strong>Total Count: $<span id="totalCount">0.00</span></strong>
+                            </div>
+                            <div class="form-group">
+                                <label for="countType">Count Type</label>
+                                <select class="form-control" id="countType" name="countType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Opening">Opening Count</option>
+                                    <option value="Closing">Closing Count</option>
+                                    <option value="Midday">Midday Count</option>
+                                    <option value="Verification">Verification Count</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="countNotes">Notes</label>
+                                <textarea class="form-control" id="countNotes" name="countNotes" rows="3" placeholder="Any notes about the count..."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="countVerifier">Verified By</label>
+                                <input type="text" class="form-control" id="countVerifier" name="countVerifier" placeholder="Name of verifier">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processCashCount()">Complete Count</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cash Transfer Modal -->
+<div class="modal fade" id="cashTransferModal" tabindex="-1" role="dialog" aria-labelledby="cashTransferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashTransferModalLabel">Cash Transfer</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cashTransferForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="transferFromAccount">From Account</label>
+                                <select class="form-control" id="transferFromAccount" name="transferFromAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="transferToAccount">To Account</label>
+                                <select class="form-control" id="transferToAccount" name="transferToAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="transferAmount">Amount</label>
+                                <input type="number" class="form-control" id="transferAmount" name="transferAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="transferType">Transfer Type</label>
+                                <select class="form-control" id="transferType" name="transferType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Internal">Internal Transfer</option>
+                                    <option value="External">External Transfer</option>
+                                    <option value="Wire">Wire Transfer</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="transferDescription">Description</label>
+                                <textarea class="form-control" id="transferDescription" name="transferDescription" rows="2" placeholder="Purpose of transfer..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processCashTransfer()">Process Transfer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check Cashing Modal -->
+<div class="modal fade" id="checkCashingModal" tabindex="-1" role="dialog" aria-labelledby="checkCashingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkCashingModalLabel">Check Cashing</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="checkCashingForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashCheckNumber">Check Number</label>
+                                <input type="text" class="form-control" id="cashCheckNumber" name="cashCheckNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashCheckAmount">Check Amount</label>
+                                <input type="number" class="form-control" id="cashCheckAmount" name="cashCheckAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashPayorBank">Payor Bank</label>
+                                <input type="text" class="form-control" id="cashPayorBank" name="cashPayorBank" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashCustomerId">Customer ID</label>
+                                <input type="text" class="form-control" id="cashCustomerId" name="cashCustomerId" placeholder="Driver's License, Passport, etc." required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashCustomerName">Customer Name</label>
+                                <input type="text" class="form-control" id="cashCustomerName" name="cashCustomerName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cashCustomerPhone">Customer Phone</label>
+                                <input type="tel" class="form-control" id="cashCustomerPhone" name="cashCustomerPhone">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="cashDenominations">Preferred Denominations</label>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label class="small">$100 Bills</label>
+                                        <input type="number" class="form-control" name="cash_hundreds" min="0" value="0">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="small">$50 Bills</label>
+                                        <input type="number" class="form-control" name="cash_fifties" min="0" value="0">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="small">$20 Bills</label>
+                                        <input type="number" class="form-control" name="cash_twenties" min="0" value="0">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="small">$10 Bills</label>
+                                        <input type="number" class="form-control" name="cash_tens" min="0" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processCheckCashing()">Cash Check</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Check Verification Modal -->
+<div class="modal fade" id="checkVerificationModal" tabindex="-1" role="dialog" aria-labelledby="checkVerificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkVerificationModalLabel">Check Verification</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="checkVerificationForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="verifyCheckNumber">Check Number</label>
+                                <input type="text" class="form-control" id="verifyCheckNumber" name="verifyCheckNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="verifyPayorBank">Payor Bank</label>
+                                <input type="text" class="form-control" id="verifyPayorBank" name="verifyPayorBank" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="verifyAccountNumber">Account Number</label>
+                                <input type="text" class="form-control" id="verifyAccountNumber" name="verifyAccountNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="verifyRoutingNumber">Routing Number</label>
+                                <input type="text" class="form-control" id="verifyRoutingNumber" name="verifyRoutingNumber" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="verifyAmount">Check Amount</label>
+                                <input type="number" class="form-control" id="verifyAmount" name="verifyAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <div id="verificationResult" class="mt-3" style="display: none;">
+                    <div class="alert alert-info">
+                        <h6>Verification Results</h6>
+                        <div id="verificationDetails"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="verifyCheck()">Verify Check</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stop Payment Modal -->
+<div class="modal fade" id="stopPaymentModal" tabindex="-1" role="dialog" aria-labelledby="stopPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="stopPaymentModalLabel">Stop Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="stopPaymentForm">
+                    <div class="form-group">
+                        <label for="stopAccount">Account Number</label>
+                        <select class="form-control" id="stopAccount" name="stopAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                            <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                            <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stopCheckNumber">Check Number</label>
+                        <input type="text" class="form-control" id="stopCheckNumber" name="stopCheckNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stopAmount">Check Amount</label>
+                        <input type="number" class="form-control" id="stopAmount" name="stopAmount" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stopPayee">Payee Name</label>
+                        <input type="text" class="form-control" id="stopPayee" name="stopPayee" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stopReason">Reason for Stop Payment</label>
+                        <select class="form-control" id="stopReason" name="stopReason" required>
+                            <option value="">Select Reason</option>
+                            <option value="Lost Check">Lost Check</option>
+                            <option value="Stolen Check">Stolen Check</option>
+                            <option value="Incorrect Amount">Incorrect Amount</option>
+                            <option value="Incorrect Payee">Incorrect Payee</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="stopDescription">Detailed Description</label>
+                        <textarea class="form-control" id="stopDescription" name="stopDescription" rows="3" placeholder="Provide detailed reason..."></textarea>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Note:</strong> Stop payment fee may apply. This action cannot be undone.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="processStopPayment()">Stop Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Modification Modal -->
+<div class="modal fade" id="accountModificationModal" tabindex="-1" role="dialog" aria-labelledby="accountModificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountModificationModalLabel">Modify Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="accountModificationForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modifyAccount">Account Number</label>
+                                <select class="form-control" id="modifyAccount" name="modifyAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modifyType">Modification Type</label>
+                                <select class="form-control" id="modifyType" name="modifyType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Address">Address Change</option>
+                                    <option value="Phone">Phone Number Change</option>
+                                    <option value="Email">Email Change</option>
+                                    <option value="AccountType">Account Type Change</option>
+                                    <option value="Limits">Transaction Limits</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modifyOldValue">Current Value</label>
+                                <input type="text" class="form-control" id="modifyOldValue" name="modifyOldValue" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="modifyNewValue">New Value</label>
+                                <input type="text" class="form-control" id="modifyNewValue" name="modifyNewValue" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="modifyReason">Reason for Change</label>
+                                <textarea class="form-control" id="modifyReason" name="modifyReason" rows="2" placeholder="Reason for modification..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processAccountModification()">Update Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Statement Modal -->
+<div class="modal fade" id="statementModal" tabindex="-1" role="dialog" aria-labelledby="statementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="statementModalLabel">Print Account Statement</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="statementForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementAccount">Account Number</label>
+                                <select class="form-control" id="statementAccount" name="statementAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementType">Statement Type</label>
+                                <select class="form-control" id="statementType" name="statementType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Monthly">Monthly Statement</option>
+                                    <option value="Quarterly">Quarterly Statement</option>
+                                    <option value="Annual">Annual Statement</option>
+                                    <option value="Custom">Custom Period</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementStartDate">Start Date</label>
+                                <input type="date" class="form-control" id="statementStartDate" name="statementStartDate">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementEndDate">End Date</label>
+                                <input type="date" class="form-control" id="statementEndDate" name="statementEndDate">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementFormat">Format</label>
+                                <select class="form-control" id="statementFormat" name="statementFormat" required>
+                                    <option value="">Select Format</option>
+                                    <option value="PDF">PDF</option>
+                                    <option value="Print">Print</option>
+                                    <option value="Email">Email</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="statementCopies">Number of Copies</label>
+                                <input type="number" class="form-control" id="statementCopies" name="statementCopies" min="1" max="10" value="1">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processStatementPrint()">Print Statement</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Closure Modal -->
+<div class="modal fade" id="accountClosureModal" tabindex="-1" role="dialog" aria-labelledby="accountClosureModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountClosureModalLabel">Close Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="accountClosureForm">
+                    <div class="form-group">
+                        <label for="closeAccount">Account Number</label>
+                        <select class="form-control" id="closeAccount" name="closeAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                            <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                            <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="closeReason">Reason for Closure</label>
+                        <select class="form-control" id="closeReason" name="closeReason" required>
+                            <option value="">Select Reason</option>
+                            <option value="Customer Request">Customer Request</option>
+                            <option value="Inactive Account">Inactive Account</option>
+                            <option value="Fraud">Fraud</option>
+                            <option value="Regulatory">Regulatory Requirement</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="closeDescription">Detailed Description</label>
+                        <textarea class="form-control" id="closeDescription" name="closeDescription" rows="3" placeholder="Provide detailed reason for account closure..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="closeDisbursement">Disbursement Method</label>
+                        <select class="form-control" id="closeDisbursement" name="closeDisbursement" required>
+                            <option value="">Select Method</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Check">Check</option>
+                            <option value="Transfer">Transfer to Another Account</option>
+                            <option value="Wire">Wire Transfer</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-danger">
+                        <strong>Warning:</strong> This action will permanently close the account. All remaining funds will be disbursed according to the selected method.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="processAccountClosure()">Close Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bill Payment Modal -->
+<div class="modal fade" id="billPaymentModal" tabindex="-1" role="dialog" aria-labelledby="billPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="billPaymentModalLabel">Bill Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="billPaymentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billAccount">From Account</label>
+                                <select class="form-control" id="billAccount" name="billAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billAmount">Payment Amount</label>
+                                <input type="number" class="form-control" id="billAmount" name="billAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billPayee">Payee Name</label>
+                                <input type="text" class="form-control" id="billPayee" name="billPayee" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billAccountNumber">Payee Account Number</label>
+                                <input type="text" class="form-control" id="billAccountNumber" name="billAccountNumber" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billType">Bill Type</label>
+                                <select class="form-control" id="billType" name="billType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Utility">Utility Bill</option>
+                                    <option value="Credit Card">Credit Card</option>
+                                    <option value="Insurance">Insurance</option>
+                                    <option value="Tax">Tax Payment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="billDueDate">Due Date</label>
+                                <input type="date" class="form-control" id="billDueDate" name="billDueDate" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="billDescription">Description</label>
+                                <textarea class="form-control" id="billDescription" name="billDescription" rows="2" placeholder="Bill description..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processBillPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loan Payment Modal -->
+<div class="modal fade" id="loanPaymentModal" tabindex="-1" role="dialog" aria-labelledby="loanPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="loanPaymentModalLabel">Loan Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="loanPaymentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanAccount">From Account</label>
+                                <select class="form-control" id="loanAccount" name="loanAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanPaymentAmount">Payment Amount</label>
+                                <input type="number" class="form-control" id="loanPaymentAmount" name="loanPaymentAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanNumber">Loan Number</label>
+                                <input type="text" class="form-control" id="loanNumber" name="loanNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="loanType">Loan Type</label>
+                                <select class="form-control" id="loanType" name="loanType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Personal">Personal Loan</option>
+                                    <option value="Auto">Auto Loan</option>
+                                    <option value="Home">Home Loan</option>
+                                    <option value="Business">Business Loan</option>
+                                    <option value="Student">Student Loan</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="paymentType">Payment Type</label>
+                                <select class="form-control" id="paymentType" name="paymentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Regular">Regular Payment</option>
+                                    <option value="Extra">Extra Payment</option>
+                                    <option value="Late">Late Payment</option>
+                                    <option value="Early">Early Payment</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="paymentMethod">Payment Method</label>
+                                <select class="form-control" id="paymentMethod" name="paymentMethod" required>
+                                    <option value="">Select Method</option>
+                                    <option value="Cash">Cash</option>
+                                    <option value="Check">Check</option>
+                                    <option value="Transfer">Account Transfer</option>
+                                    <option value="Card">Card Payment</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processLoanPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Utility Payment Modal -->
+<div class="modal fade" id="utilityPaymentModal" tabindex="-1" role="dialog" aria-labelledby="utilityPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="utilityPaymentModalLabel">Utility Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="utilityPaymentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityAccount">From Account</label>
+                                <select class="form-control" id="utilityAccount" name="utilityAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityAmount">Payment Amount</label>
+                                <input type="number" class="form-control" id="utilityAmount" name="utilityAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityType">Utility Type</label>
+                                <select class="form-control" id="utilityType" name="utilityType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Electricity">Electricity</option>
+                                    <option value="Water">Water</option>
+                                    <option value="Gas">Gas</option>
+                                    <option value="Internet">Internet</option>
+                                    <option value="Phone">Phone</option>
+                                    <option value="Cable">Cable TV</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityProvider">Service Provider</label>
+                                <input type="text" class="form-control" id="utilityProvider" name="utilityProvider" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityAccountNumber">Utility Account Number</label>
+                                <input type="text" class="form-control" id="utilityAccountNumber" name="utilityAccountNumber" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="utilityDueDate">Due Date</label>
+                                <input type="date" class="form-control" id="utilityDueDate" name="utilityDueDate" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processUtilityPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tax Payment Modal -->
+<div class="modal fade" id="taxPaymentModal" tabindex="-1" role="dialog" aria-labelledby="taxPaymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="taxPaymentModalLabel">Tax Payment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="taxPaymentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxAccount">From Account</label>
+                                <select class="form-control" id="taxAccount" name="taxAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxAmount">Payment Amount</label>
+                                <input type="number" class="form-control" id="taxAmount" name="taxAmount" min="0" step="0.01" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxType">Tax Type</label>
+                                <select class="form-control" id="taxType" name="taxType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Income Tax">Income Tax</option>
+                                    <option value="Property Tax">Property Tax</option>
+                                    <option value="Sales Tax">Sales Tax</option>
+                                    <option value="Business Tax">Business Tax</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxAuthority">Tax Authority</label>
+                                <input type="text" class="form-control" id="taxAuthority" name="taxAuthority" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxPeriod">Tax Period</label>
+                                <input type="text" class="form-control" id="taxPeriod" name="taxPeriod" placeholder="e.g., 2024, Q1 2024" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="taxDueDate">Due Date</label>
+                                <input type="date" class="form-control" id="taxDueDate" name="taxDueDate" required>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" onclick="processTaxPayment()">Process Payment</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Card Issuance Modal -->
+<div class="modal fade" id="cardIssuanceModal" tabindex="-1" role="dialog" aria-labelledby="cardIssuanceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cardIssuanceModalLabel">Issue New Card</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cardIssuanceForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardAccount">Account Number</label>
+                                <select class="form-control" id="cardAccount" name="cardAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardType">Card Type</label>
+                                <select class="form-control" id="cardType" name="cardType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Debit">Debit Card</option>
+                                    <option value="Credit">Credit Card</option>
+                                    <option value="ATM">ATM Card</option>
+                                    <option value="Prepaid">Prepaid Card</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardHolderName">Cardholder Name</label>
+                                <input type="text" class="form-control" id="cardHolderName" name="cardHolderName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardLimit">Daily Limit</label>
+                                <input type="number" class="form-control" id="cardLimit" name="cardLimit" min="0" step="0.01" placeholder="0 for no limit">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardDelivery">Delivery Method</label>
+                                <select class="form-control" id="cardDelivery" name="cardDelivery" required>
+                                    <option value="">Select Method</option>
+                                    <option value="Branch">Branch Pickup</option>
+                                    <option value="Mail">Mail Delivery</option>
+                                    <option value="Express">Express Delivery</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="cardPin">Initial PIN</label>
+                                <input type="password" class="form-control" id="cardPin" name="cardPin" maxlength="4" placeholder="4-digit PIN">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processCardIssuance()">Issue Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Card Replacement Modal -->
+<div class="modal fade" id="cardReplacementModal" tabindex="-1" role="dialog" aria-labelledby="cardReplacementModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cardReplacementModalLabel">Replace Card</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cardReplacementForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="replaceAccount">Account Number</label>
+                                <select class="form-control" id="replaceAccount" name="replaceAccount" required>
+                                    <option value="">Select Account</option>
+                                    <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                                    <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                                    <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="oldCardNumber">Old Card Number</label>
+                                <input type="text" class="form-control" id="oldCardNumber" name="oldCardNumber" placeholder="****-****-****-1234" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="replacementReason">Reason for Replacement</label>
+                                <select class="form-control" id="replacementReason" name="replacementReason" required>
+                                    <option value="">Select Reason</option>
+                                    <option value="Lost">Lost Card</option>
+                                    <option value="Stolen">Stolen Card</option>
+                                    <option value="Damaged">Damaged Card</option>
+                                    <option value="Expired">Expired Card</option>
+                                    <option value="Customer Request">Customer Request</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="replacementType">Replacement Type</label>
+                                <select class="form-control" id="replacementType" name="replacementType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Same">Same Card Type</option>
+                                    <option value="Upgrade">Upgrade Card</option>
+                                    <option value="Different">Different Card Type</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="replacementDelivery">Delivery Method</label>
+                                <select class="form-control" id="replacementDelivery" name="replacementDelivery" required>
+                                    <option value="">Select Method</option>
+                                    <option value="Branch">Branch Pickup</option>
+                                    <option value="Mail">Mail Delivery</option>
+                                    <option value="Express">Express Delivery</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="replacementFee">Replacement Fee</label>
+                                <input type="number" class="form-control" id="replacementFee" name="replacementFee" min="0" step="0.01" value="0.00">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning" onclick="processCardReplacement()">Replace Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PIN Change Modal -->
+<div class="modal fade" id="pinChangeModal" tabindex="-1" role="dialog" aria-labelledby="pinChangeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pinChangeModalLabel">Change PIN</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="pinChangeForm">
+                    <div class="form-group">
+                        <label for="pinAccount">Account Number</label>
+                        <select class="form-control" id="pinAccount" name="pinAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                            <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                            <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="cardNumber">Card Number</label>
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder="****-****-****-1234" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="currentPin">Current PIN</label>
+                        <input type="password" class="form-control" id="currentPin" name="currentPin" maxlength="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPin">New PIN</label>
+                        <input type="password" class="form-control" id="newPin" name="newPin" maxlength="4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPin">Confirm New PIN</label>
+                        <input type="password" class="form-control" id="confirmPin" name="confirmPin" maxlength="4" required>
+                    </div>
+                    <div class="alert alert-info">
+                        <strong>Note:</strong> PIN must be 4 digits and cannot be sequential or repetitive.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="processPinChange()">Change PIN</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Card Block Modal -->
+<div class="modal fade" id="cardBlockModal" tabindex="-1" role="dialog" aria-labelledby="cardBlockModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cardBlockModalLabel">Block Card</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="cardBlockForm">
+                    <div class="form-group">
+                        <label for="blockAccount">Account Number</label>
+                        <select class="form-control" id="blockAccount" name="blockAccount" required>
+                            <option value="">Select Account</option>
+                            <option value="ACC-001-2024">ACC-001-2024 (John Smith)</option>
+                            <option value="ACC-002-2024">ACC-002-2024 (Sarah Johnson)</option>
+                            <option value="ACC-003-2024">ACC-003-2024 (Michael Brown)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="blockCardNumber">Card Number</label>
+                        <input type="text" class="form-control" id="blockCardNumber" name="blockCardNumber" placeholder="****-****-****-1234" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="blockReason">Reason for Blocking</label>
+                        <select class="form-control" id="blockReason" name="blockReason" required>
+                            <option value="">Select Reason</option>
+                            <option value="Suspicious Activity">Suspicious Activity</option>
+                            <option value="Fraud Alert">Fraud Alert</option>
+                            <option value="Lost Card">Lost Card</option>
+                            <option value="Stolen Card">Stolen Card</option>
+                            <option value="Customer Request">Customer Request</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="blockDescription">Detailed Description</label>
+                        <textarea class="form-control" id="blockDescription" name="blockDescription" rows="3" placeholder="Provide detailed reason for blocking..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="blockDuration">Block Duration</label>
+                        <select class="form-control" id="blockDuration" name="blockDuration" required>
+                            <option value="">Select Duration</option>
+                            <option value="temporary">Temporary (24 hours)</option>
+                            <option value="permanent">Permanent</option>
+                            <option value="until_replacement">Until Replacement</option>
+                        </select>
+                    </div>
+                    <div class="alert alert-warning">
+                        <strong>Warning:</strong> This action will immediately block all transactions on the card.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" onclick="processCardBlock()">Block Card</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Wire Transfer Modal -->
+<div class="modal fade" id="wireTransferModal" tabindex="-1" role="dialog" aria-labelledby="wireTransferModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="wireTransferModalLabel"><i class="fas fa-paper-plane text-info"></i> Wire Transfer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="wireTransferForm">
+                <div class="modal-body">
+                    <div id="wireTransferAlert"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="wireFromAccount" class="form-label">From Account</label>
+                                <input type="text" class="form-control" id="wireFromAccount" name="from_account" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wireAmount" class="form-label">Amount</label>
+                                <input type="number" class="form-control" id="wireAmount" name="amount" min="1" step="0.01" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wireCurrency" class="form-label">Currency</label>
+                                <select class="form-select" id="wireCurrency" name="currency">
+                                    <option value="USD">USD</option>
+                                    <option value="EUR">EUR</option>
+                                    <option value="GBP">GBP</option>
+                                    <option value="NGN">NGN</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="wireToAccount" class="form-label">To Account</label>
+                                <input type="text" class="form-control" id="wireToAccount" name="to_account" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wireBankName" class="form-label">Bank Name</label>
+                                <input type="text" class="form-control" id="wireBankName" name="bank_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="wireSwiftCode" class="form-label">SWIFT Code</label>
+                                <input type="text" class="form-control" id="wireSwiftCode" name="swift_code" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="wireDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="wireDescription" name="description" maxlength="100">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Process Wire Transfer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Foreign Check Modal -->
+<div class="modal fade" id="foreignCheckModal" tabindex="-1" role="dialog" aria-labelledby="foreignCheckModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="foreignCheckModalLabel"><i class="fas fa-money-check-alt text-warning"></i> Foreign Check</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="foreignCheckForm">
+                <div class="modal-body">
+                    <div id="foreignCheckAlert"></div>
+                    <div class="mb-3">
+                        <label for="foreignCheckAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="foreignCheckAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="foreignCheckAmount" class="form-label">Amount</label>
+                        <input type="number" class="form-control" id="foreignCheckAmount" name="amount" min="1" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="foreignCheckCurrency" class="form-label">Currency</label>
+                        <select class="form-select" id="foreignCheckCurrency" name="currency">
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="CAD">CAD</option>
+                            <option value="AUD">AUD</option>
+                            <option value="JPY">JPY</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="foreignCheckNumber" class="form-label">Check Number</label>
+                        <input type="text" class="form-control" id="foreignCheckNumber" name="check_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="foreignCheckDescription" class="form-label">Description</label>
+                        <input type="text" class="form-control" id="foreignCheckDescription" name="description" maxlength="100">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Process Foreign Check</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Exchange Rates Modal -->
+<div class="modal fade" id="exchangeRateModal" tabindex="-1" role="dialog" aria-labelledby="exchangeRateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exchangeRateModalLabel"><i class="fas fa-chart-line text-secondary"></i> Exchange Rates</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="exchangeRateAlert"></div>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Currency</th>
+                                <th>Buy Rate</th>
+                                <th>Sell Rate</th>
+                                <th>Last Updated</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exchangeRateBody">
+                            <!-- Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="refreshExchangeRates()">Refresh Rates</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Account Inquiry Modal -->
+<div class="modal fade" id="accountInquiryModal" tabindex="-1" role="dialog" aria-labelledby="accountInquiryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="accountInquiryModalLabel"><i class="fas fa-question-circle text-info"></i> Account Inquiry</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="accountInquiryForm">
+                <div class="modal-body">
+                    <div id="accountInquiryAlert"></div>
+                    <div class="mb-3">
+                        <label for="inquiryAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="inquiryAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inquiryType" class="form-label">Inquiry Type</label>
+                        <select class="form-select" id="inquiryType" name="inquiry_type">
+                            <option value="balance">Balance Inquiry</option>
+                            <option value="transactions">Transaction History</option>
+                            <option value="details">Account Details</option>
+                            <option value="status">Account Status</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Search</button>
+                </div>
+            </form>
+            <div id="inquiryResults" class="modal-body" style="display: none;">
+                <!-- Results will be populated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Request Modal -->
+<div class="modal fade" id="documentRequestModal" tabindex="-1" role="dialog" aria-labelledby="documentRequestModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentRequestModalLabel"><i class="fas fa-file text-warning"></i> Document Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="documentRequestForm">
+                <div class="modal-body">
+                    <div id="documentRequestAlert"></div>
+                    <div class="mb-3">
+                        <label for="documentAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="documentAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentType" class="form-label">Document Type</label>
+                        <select class="form-select" id="documentType" name="document_type">
+                            <option value="statement">Account Statement</option>
+                            <option value="certificate">Balance Certificate</option>
+                            <option value="letter">Bank Letter</option>
+                            <option value="confirmation">Transaction Confirmation</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentPeriod" class="form-label">Period</label>
+                        <select class="form-select" id="documentPeriod" name="period">
+                            <option value="last_month">Last Month</option>
+                            <option value="last_3_months">Last 3 Months</option>
+                            <option value="last_6_months">Last 6 Months</option>
+                            <option value="last_year">Last Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="documentEmail" name="email" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Request Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Customer Update Modal -->
+<div class="modal fade" id="customerUpdateModal" tabindex="-1" role="dialog" aria-labelledby="customerUpdateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="customerUpdateModalLabel"><i class="fas fa-user-edit text-secondary"></i> Update Customer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="customerUpdateForm">
+                <div class="modal-body">
+                    <div id="customerUpdateAlert"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="updateAccount" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="updateAccount" name="account_number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="updateFirstName" name="first_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="updateLastName" name="last_name" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="updateEmail" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="updateEmail" name="email" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updatePhone" class="form-label">Phone</label>
+                                <input type="tel" class="form-control" id="updatePhone" name="phone" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="updateAddress" class="form-label">Address</label>
+                                <textarea class="form-control" id="updateAddress" name="address" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Update Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Fraud Report Modal -->
+<div class="modal fade" id="fraudReportModal" tabindex="-1" role="dialog" aria-labelledby="fraudReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="fraudReportModalLabel"><i class="fas fa-exclamation-triangle text-danger"></i> Report Fraud</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="fraudReportForm">
+                <div class="modal-body">
+                    <div id="fraudReportAlert"></div>
+                    <div class="mb-3">
+                        <label for="fraudAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="fraudAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fraudType" class="form-label">Fraud Type</label>
+                        <select class="form-select" id="fraudType" name="fraud_type">
+                            <option value="identity_theft">Identity Theft</option>
+                            <option value="account_takeover">Account Takeover</option>
+                            <option value="check_fraud">Check Fraud</option>
+                            <option value="card_fraud">Card Fraud</option>
+                            <option value="phishing">Phishing</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fraudDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="fraudDescription" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fraudDate" class="form-label">Incident Date</label>
+                        <input type="date" class="form-control" id="fraudDate" name="incident_date" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Report Fraud</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Suspicious Activity Modal -->
+<div class="modal fade" id="suspiciousActivityModal" tabindex="-1" role="dialog" aria-labelledby="suspiciousActivityModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="suspiciousActivityModalLabel"><i class="fas fa-eye text-info"></i> Suspicious Activity</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="suspiciousActivityForm">
+                <div class="modal-body">
+                    <div id="suspiciousActivityAlert"></div>
+                    <div class="mb-3">
+                        <label for="suspiciousAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="suspiciousAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="suspiciousType" class="form-label">Activity Type</label>
+                        <select class="form-select" id="suspiciousType" name="activity_type">
+                            <option value="unusual_transaction">Unusual Transaction</option>
+                            <option value="multiple_attempts">Multiple Login Attempts</option>
+                            <option value="large_withdrawal">Large Withdrawal</option>
+                            <option value="foreign_transaction">Foreign Transaction</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="suspiciousDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="suspiciousDescription" name="description" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Report Activity</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Security Alert Modal -->
+<div class="modal fade" id="securityAlertModal" tabindex="-1" role="dialog" aria-labelledby="securityAlertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="securityAlertModalLabel"><i class="fas fa-bell text-secondary"></i> Security Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="securityAlertForm">
+                <div class="modal-body">
+                    <div id="securityAlertAlert"></div>
+                    <div class="mb-3">
+                        <label for="securityAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="securityAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertType" class="form-label">Alert Type</label>
+                        <select class="form-select" id="alertType" name="alert_type">
+                            <option value="login_alert">Login Alert</option>
+                            <option value="transaction_alert">Transaction Alert</option>
+                            <option value="balance_alert">Balance Alert</option>
+                            <option value="card_usage_alert">Card Usage Alert</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertThreshold" class="form-label">Threshold Amount</label>
+                        <input type="number" class="form-control" id="alertThreshold" name="threshold" min="1" step="0.01">
+                    </div>
+                    <div class="mb-3">
+                        <label for="alertEmail" class="form-label">Alert Email</label>
+                        <input type="email" class="form-control" id="alertEmail" name="email" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Set Alert</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Transaction Report Modal -->
+<div class="modal fade" id="transactionReportModal" tabindex="-1" role="dialog" aria-labelledby="transactionReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="transactionReportModalLabel"><i class="fas fa-file-alt text-primary"></i> Transaction Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="transactionReportForm">
+                <div class="modal-body">
+                    <div id="transactionReportAlert"></div>
+                    <div class="mb-3">
+                        <label for="reportAccount" class="form-label">Account Number</label>
+                        <input type="text" class="form-control" id="reportAccount" name="account_number" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportType" class="form-label">Report Type</label>
+                        <select class="form-select" id="reportType" name="report_type">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="custom">Custom Period</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="reportStartDate" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="reportStartDate" name="start_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="reportEndDate" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="reportEndDate" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="reportFormat" class="form-label">Format</label>
+                        <select class="form-select" id="reportFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Cash Flow Report Modal -->
+<div class="modal fade" id="cashFlowReportModal" tabindex="-1" role="dialog" aria-labelledby="cashFlowReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cashFlowReportModalLabel"><i class="fas fa-chart-line text-info"></i> Cash Flow Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="cashFlowReportForm">
+                <div class="modal-body">
+                    <div id="cashFlowReportAlert"></div>
+                    <div class="mb-3">
+                        <label for="cashFlowPeriod" class="form-label">Period</label>
+                        <select class="form-select" id="cashFlowPeriod" name="period">
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="quarter">This Quarter</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cashFlowType" class="form-label">Report Type</label>
+                        <select class="form-select" id="cashFlowType" name="report_type">
+                            <option value="summary">Summary</option>
+                            <option value="detailed">Detailed</option>
+                            <option value="by_category">By Category</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cashFlowFormat" class="form-label">Format</label>
+                        <select class="form-select" id="cashFlowFormat" name="format">
+                            <option value="pdf">PDF</option>
+                            <option value="excel">Excel</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-info">Generate Cash Flow Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- KYC Verification Modal -->
+<div class="modal fade" id="kycVerificationModal" tabindex="-1" role="dialog" aria-labelledby="kycVerificationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="kycVerificationModalLabel"><i class="fas fa-user-check text-warning"></i> KYC Verification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="kycVerificationForm">
+                <div class="modal-body">
+                    <div id="kycVerificationAlert"></div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="kycAccount" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="kycAccount" name="account_number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kycFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="kycFirstName" name="first_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kycLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="kycLastName" name="last_name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kycDateOfBirth" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="kycDateOfBirth" name="date_of_birth" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="kycIdType" class="form-label">ID Type</label>
+                                <select class="form-select" id="kycIdType" name="id_type">
+                                    <option value="passport">Passport</option>
+                                    <option value="national_id">National ID</option>
+                                    <option value="drivers_license">Driver's License</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kycIdNumber" class="form-label">ID Number</label>
+                                <input type="text" class="form-control" id="kycIdNumber" name="id_number" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="kycAddress" class="form-label">Address</label>
+                                <textarea class="form-control" id="kycAddress" name="address" rows="3" required></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-warning">Verify KYC</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Regulatory Report Modal -->
+<div class="modal fade" id="regulatoryReportModal" tabindex="-1" role="dialog" aria-labelledby="regulatoryReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="regulatoryReportModalLabel"><i class="fas fa-clipboard-check text-secondary"></i> Regulatory Report</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="regulatoryReportForm">
+                <div class="modal-body">
+                    <div id="regulatoryReportAlert"></div>
+                    <div class="mb-3">
+                        <label for="regulatoryType" class="form-label">Report Type</label>
+                        <select class="form-select" id="regulatoryType" name="report_type">
+                            <option value="suspicious_activity">Suspicious Activity Report</option>
+                            <option value="currency_transaction">Currency Transaction Report</option>
+                            <option value="large_transaction">Large Transaction Report</option>
+                            <option value="compliance">Compliance Report</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="regulatoryPeriod" class="form-label">Reporting Period</label>
+                        <select class="form-select" id="regulatoryPeriod" name="period">
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="quarterly">Quarterly</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="regulatoryDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="regulatoryDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="regulatoryFormat" class="form-label">Format</label>
+                        <select class="form-select" id="regulatoryFormat" name="format">
+                            <option value="xml">XML</option>
+                            <option value="csv">CSV</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-secondary">Generate Regulatory Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize DataTable
+$(document).ready(function() {
+    $('#accountsTable').DataTable({
+        "order": [[ 0, "asc" ]],
+        "pageLength": 10,
+        "responsive": true
+    });
+    
+    loadRecentTransactions();
+});
+
+// Modal functions
+function showNewAccountModal() {
+    $('#newAccountModal').modal('show');
+}
+
+function showTransactionModal() {
+    $('#transactionModal').modal('show');
+}
+
+function showBalanceModal() {
+    $('#balanceModal').modal('show');
+}
+
+function showReportModal() {
+    $('#reportModal').modal('show');
+}
+
+// Cash Operations Modal Functions
+function showCashDepositModal() {
+    $('#cashDepositModal').modal('show');
+}
+
+function showCashWithdrawalModal() {
+    $('#cashWithdrawalModal').modal('show');
+}
+
+function showCashCountModal() {
+    $('#cashCountModal').modal('show');
+}
+
+function showCashTransferModal() {
+    $('#cashTransferModal').modal('show');
+}
+
+// Check Operations Modal Functions
+function showCheckDepositModal() {
+    $('#checkDepositModal').modal('show');
+}
+
+function showCheckCashingModal() {
+    $('#checkCashingModal').modal('show');
+}
+
+function showCheckVerificationModal() {
+    $('#checkVerificationModal').modal('show');
+}
+
+function showCheckStopPaymentModal() {
+    $('#stopPaymentModal').modal('show');
+}
+
+// Account Services Modal Functions
+function showAccountModificationModal() {
+    $('#accountModificationModal').modal('show');
+}
+
+function showStatementModal() {
+    $('#statementModal').modal('show');
+}
+
+function showAccountClosureModal() {
+    $('#accountClosureModal').modal('show');
+}
+
+// Payment Services Modal Functions
+function showBillPaymentModal() {
+    $('#billPaymentModal').modal('show');
+}
+
+function showLoanPaymentModal() {
+    $('#loanPaymentModal').modal('show');
+}
+
+function showUtilityPaymentModal() {
+    $('#utilityPaymentModal').modal('show');
+}
+
+function showTaxPaymentModal() {
+    $('#taxPaymentModal').modal('show');
+}
+
+// Card Services Modal Functions
+function showCardIssuanceModal() {
+    $('#cardIssuanceModal').modal('show');
+}
+
+function showCardReplacementModal() {
+    $('#cardReplacementModal').modal('show');
+}
+
+function showPinChangeModal() {
+    $('#pinChangeModal').modal('show');
+}
+
+function showCardBlockModal() {
+    $('#cardBlockModal').modal('show');
+}
+
+// Foreign Exchange Modal Functions
+function showCurrencyExchangeModal() {
+    $('#currencyExchangeModal').modal('show');
+}
+
+function showWireTransferModal() {
+    $('#wireTransferModal').modal('show');
+}
+
+function showForeignCheckModal() {
+    $('#foreignCheckModal').modal('show');
+}
+
+function showExchangeRateModal() {
+    $('#exchangeRateModal').modal('show');
+    loadExchangeRates();
+}
+
+// Customer Services Modal Functions
+function showCustomerLookupModal() {
+    $('#customerLookupModal').modal('show');
+}
+
+function showAccountInquiryModal() {
+    $('#accountInquiryModal').modal('show');
+}
+
+function showDocumentRequestModal() {
+    $('#documentRequestModal').modal('show');
+}
+
+function showCustomerUpdateModal() {
+    $('#customerUpdateModal').modal('show');
+}
+
+// Security Services Modal Functions
+function showAccountFreezeModal() {
+    $('#accountFreezeModal').modal('show');
+}
+
+function showFraudReportModal() {
+    $('#fraudReportModal').modal('show');
+}
+
+function showSuspiciousActivityModal() {
+    $('#suspiciousActivityModal').modal('show');
+}
+
+function showSecurityAlertModal() {
+    $('#securityAlertModal').modal('show');
+}
+
+// Reporting & Compliance Modal Functions
+function showTransactionReportModal() {
+    $('#transactionReportModal').modal('show');
+}
+
+function showCashFlowReportModal() {
+    $('#cashFlowReportModal').modal('show');
+}
+
+function showKycVerificationModal() {
+    $('#kycVerificationModal').modal('show');
+}
+
+function showRegulatoryReportModal() {
+    $('#regulatoryReportModal').modal('show');
+}
+
+// Processing Functions for New Modals
+function processCashCount() {
+    const form = document.getElementById('cashCountForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.countType) {
+        alert('Please select a count type.');
+        return;
+    }
+    
+    // Calculate total from denominations
+    const hundreds = parseInt(data.countHundreds) || 0;
+    const fifties = parseInt(data.countFifties) || 0;
+    const twenties = parseInt(data.countTwenties) || 0;
+    const tens = parseInt(data.countTens) || 0;
+    const fives = parseInt(data.countFives) || 0;
+    const ones = parseInt(data.countOnes) || 0;
+    
+    const total = (hundreds * 100) + (fifties * 50) + (twenties * 20) + (tens * 10) + (fives * 5) + ones;
+    
+    alert(`Cash count completed successfully!\nCount Type: ${data.countType}\nTotal Amount: $${total.toFixed(2)}\nCount ID: CC-${Math.floor(Math.random() * 10000)}`);
+    $('#cashCountModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCashTransfer() {
+    const form = document.getElementById('cashTransferForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.transferFromAccount || !data.transferToAccount || !data.transferAmount) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (data.transferFromAccount === data.transferToAccount) {
+        alert('From and To accounts cannot be the same.');
+        return;
+    }
+    
+    alert(`Cash transfer processed successfully!\nFrom: ${data.transferFromAccount}\nTo: ${data.transferToAccount}\nAmount: $${data.transferAmount}\nTransaction ID: CT-${Math.floor(Math.random() * 10000)}`);
+    $('#cashTransferModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCheckCashing() {
+    const form = document.getElementById('checkCashingForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.cashCheckNumber || !data.cashCheckAmount || !data.cashPayorBank || !data.cashCustomerId) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Check cashed successfully!\nCheck #: ${data.cashCheckNumber}\nAmount: $${data.cashCheckAmount}\nCustomer: ${data.cashCustomerName}\nTransaction ID: CC-${Math.floor(Math.random() * 10000)}`);
+    $('#checkCashingModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function verifyCheck() {
+    const form = document.getElementById('checkVerificationForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.verifyCheckNumber || !data.verifyPayorBank || !data.verifyAccountNumber || !data.verifyAmount) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Mock verification result
+    const verificationDetails = `
+        <strong>Check Verification Results:</strong><br>
+        Check Number: ${data.verifyCheckNumber}<br>
+        Payor Bank: ${data.verifyPayorBank}<br>
+        Account Number: ${data.verifyAccountNumber}<br>
+        Amount: $${data.verifyAmount}<br>
+        Status: <span class="text-success">✓ VERIFIED</span><br>
+        Verification ID: VF-${Math.floor(Math.random() * 10000)}
+    `;
+    
+    document.getElementById('verificationDetails').innerHTML = verificationDetails;
+    document.getElementById('verificationResult').style.display = 'block';
+}
+
+function processStopPayment() {
+    const form = document.getElementById('stopPaymentForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.stopAccount || !data.stopCheckNumber || !data.stopAmount || !data.stopPayee || !data.stopReason) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to stop payment on check ${data.stopCheckNumber}?\nAmount: $${data.stopAmount}\nPayee: ${data.stopPayee}`)) {
+        alert(`Stop payment processed successfully!\nCheck #: ${data.stopCheckNumber}\nStop Payment ID: SP-${Math.floor(Math.random() * 10000)}`);
+        $('#stopPaymentModal').modal('hide');
+        form.reset();
+        location.reload();
+    }
+}
+
+function processAccountModification() {
+    const form = document.getElementById('accountModificationForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.modifyAccount || !data.modifyType || !data.modifyNewValue) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Account modification processed successfully!\nAccount: ${data.modifyAccount}\nModification Type: ${data.modifyType}\nNew Value: ${data.modifyNewValue}\nModification ID: AM-${Math.floor(Math.random() * 10000)}`);
+    $('#accountModificationModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processStatementPrint() {
+    const form = document.getElementById('statementForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.statementAccount || !data.statementType || !data.statementFormat) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Statement printed successfully!\nAccount: ${data.statementAccount}\nStatement Type: ${data.statementType}\nFormat: ${data.statementFormat}\nStatement ID: ST-${Math.floor(Math.random() * 10000)}`);
+    $('#statementModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processAccountClosure() {
+    const form = document.getElementById('accountClosureForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.closeAccount || !data.closeReason || !data.closeDescription || !data.closeDisbursement) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to close account ${data.closeAccount}?\nReason: ${data.closeReason}\nDisbursement: ${data.closeDisbursement}`)) {
+        alert(`Account closed successfully!\nAccount: ${data.closeAccount}\nClosure ID: AC-${Math.floor(Math.random() * 10000)}`);
+        $('#accountClosureModal').modal('hide');
+        form.reset();
+        location.reload();
+    }
+}
+
+function processBillPayment() {
+    const form = document.getElementById('billPaymentForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.billAccount || !data.billAmount || !data.billPayee || !data.billType) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Bill payment processed successfully!\nAccount: ${data.billAccount}\nAmount: $${data.billAmount}\nPayee: ${data.billPayee}\nBill Type: ${data.billType}\nTransaction ID: BP-${Math.floor(Math.random() * 10000)}`);
+    $('#billPaymentModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processLoanPayment() {
+    const form = document.getElementById('loanPaymentForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.loanAccount || !data.loanPaymentAmount || !data.loanNumber || !data.loanType) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Loan payment processed successfully!\nAccount: ${data.loanAccount}\nAmount: $${data.loanPaymentAmount}\nLoan #: ${data.loanNumber}\nLoan Type: ${data.loanType}\nTransaction ID: LP-${Math.floor(Math.random() * 10000)}`);
+    $('#loanPaymentModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processUtilityPayment() {
+    const form = document.getElementById('utilityPaymentForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.utilityAccount || !data.utilityAmount || !data.utilityType || !data.utilityProvider) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Utility payment processed successfully!\nAccount: ${data.utilityAccount}\nAmount: $${data.utilityAmount}\nUtility: ${data.utilityType}\nProvider: ${data.utilityProvider}\nTransaction ID: UP-${Math.floor(Math.random() * 10000)}`);
+    $('#utilityPaymentModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processTaxPayment() {
+    const form = document.getElementById('taxPaymentForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.taxAccount || !data.taxAmount || !data.taxType || !data.taxAuthority) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Tax payment processed successfully!\nAccount: ${data.taxAccount}\nAmount: $${data.taxAmount}\nTax Type: ${data.taxType}\nAuthority: ${data.taxAuthority}\nTransaction ID: TP-${Math.floor(Math.random() * 10000)}`);
+    $('#taxPaymentModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCardIssuance() {
+    const form = document.getElementById('cardIssuanceForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.cardAccount || !data.cardType || !data.cardHolderName) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    const cardNumber = `****-****-****-${Math.floor(Math.random() * 9000) + 1000}`;
+    const expiryDate = `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 25}`;
+    
+    alert(`Card issued successfully!\nAccount: ${data.cardAccount}\nCard Type: ${data.cardType}\nCard Number: ${cardNumber}\nExpiry: ${expiryDate}\nCard ID: CI-${Math.floor(Math.random() * 10000)}`);
+    $('#cardIssuanceModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCardReplacement() {
+    const form = document.getElementById('cardReplacementForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.replaceAccount || !data.oldCardNumber || !data.replacementReason) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    const newCardNumber = `****-****-****-${Math.floor(Math.random() * 9000) + 1000}`;
+    const expiryDate = `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 25}`;
+    
+    alert(`Card replacement processed successfully!\nAccount: ${data.replaceAccount}\nOld Card: ${data.oldCardNumber}\nNew Card: ${newCardNumber}\nReason: ${data.replacementReason}\nReplacement ID: CR-${Math.floor(Math.random() * 10000)}`);
+    $('#cardReplacementModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processPinChange() {
+    const form = document.getElementById('pinChangeForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.pinAccount || !data.cardNumber || !data.currentPin || !data.newPin || !data.confirmPin) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (data.newPin !== data.confirmPin) {
+        alert('New PIN and Confirm PIN do not match.');
+        return;
+    }
+    
+    if (data.newPin.length !== 4) {
+        alert('PIN must be exactly 4 digits.');
+        return;
+    }
+    
+    alert(`PIN changed successfully!\nAccount: ${data.pinAccount}\nCard: ${data.cardNumber}\nPIN Change ID: PC-${Math.floor(Math.random() * 10000)}`);
+    $('#pinChangeModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCardBlock() {
+    const form = document.getElementById('cardBlockForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.blockAccount || !data.blockCardNumber || !data.blockReason) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to block card ${data.blockCardNumber}?\nReason: ${data.blockReason}\nDuration: ${data.blockDuration}`)) {
+        alert(`Card blocked successfully!\nAccount: ${data.blockAccount}\nCard: ${data.blockCardNumber}\nBlock ID: CB-${Math.floor(Math.random() * 10000)}`);
+        $('#cardBlockModal').modal('hide');
+        form.reset();
+        location.reload();
+    }
+}
+
+// Original functions that were removed
+function processCashDeposit() {
+    const form = document.getElementById('cashDepositForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.depositAccount || !data.depositAmount) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Calculate total from denominations
+    const hundreds = parseInt(data.hundreds) || 0;
+    const fifties = parseInt(data.fifties) || 0;
+    const twenties = parseInt(data.twenties) || 0;
+    const tens = parseInt(data.tens) || 0;
+    const fives = parseInt(data.fives) || 0;
+    const ones = parseInt(data.ones) || 0;
+    
+    const total = (hundreds * 100) + (fifties * 50) + (twenties * 20) + (tens * 10) + (fives * 5) + ones;
+    
+    if (total !== parseFloat(data.depositAmount)) {
+        alert('Cash denominations do not match the total amount. Please verify.');
+        return;
+    }
+    
+    alert(`Cash deposit processed successfully!\nAccount: ${data.depositAccount}\nAmount: $${data.depositAmount}\nTransaction ID: CD-${Math.floor(Math.random() * 10000)}`);
+    $('#cashDepositModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCashWithdrawal() {
+    const form = document.getElementById('cashWithdrawalForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.withdrawalAccount || !data.withdrawalAmount || !data.withdrawalId) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Cash withdrawal processed successfully!\nAccount: ${data.withdrawalAccount}\nAmount: $${data.withdrawalAmount}\nTransaction ID: CW-${Math.floor(Math.random() * 10000)}`);
+    $('#cashWithdrawalModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCheckDeposit() {
+    const form = document.getElementById('checkDepositForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.checkDepositAccount || !data.checkAmount || !data.checkNumber || !data.payorBank) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    alert(`Check deposit processed successfully!\nAccount: ${data.checkDepositAccount}\nCheck Amount: $${data.checkAmount}\nCheck #: ${data.checkNumber}\nTransaction ID: CHK-${Math.floor(Math.random() * 10000)}`);
+    $('#checkDepositModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processCurrencyExchange() {
+    const form = document.getElementById('currencyExchangeForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.fromCurrency || !data.toCurrency || !data.exchangeAmount || !data.exchangeRate) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    const convertedAmount = parseFloat(data.exchangeAmount) * parseFloat(data.exchangeRate);
+    
+    alert(`Currency exchange processed successfully!\nFrom: ${data.fromCurrency} ${data.exchangeAmount}\nTo: ${data.toCurrency} ${convertedAmount.toFixed(2)}\nRate: ${data.exchangeRate}\nTransaction ID: FX-${Math.floor(Math.random() * 10000)}`);
+    $('#currencyExchangeModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function searchCustomer() {
+    const lookupType = document.getElementById('lookupType').value;
+    const lookupValue = document.getElementById('lookupValue').value;
+    
+    if (!lookupType || !lookupValue) {
+        alert('Please fill in all search fields.');
+        return;
+    }
+    
+    // Simulate customer search
+    const mockResults = [
+        {
+            account: 'ACC-001-2024',
+            name: 'John Smith',
+            phone: '(555) 123-4567',
+            balance: '$15,250.00',
+            status: 'Active'
+        },
+        {
+            account: 'ACC-002-2024',
+            name: 'Sarah Johnson',
+            phone: '(555) 234-5678',
+            balance: '$8,750.50',
+            status: 'Active'
+        }
+    ];
+    
+    let html = '';
+    mockResults.forEach(customer => {
+        html += `
+            <tr>
+                <td>${customer.account}</td>
+                <td>${customer.name}</td>
+                <td>${customer.phone}</td>
+                <td>${customer.balance}</td>
+                <td><span class="badge badge-success">${customer.status}</span></td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="viewCustomerDetails('${customer.account}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-info btn-sm" onclick="editCustomer('${customer.account}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    document.getElementById('customerResultsBody').innerHTML = html;
+    document.getElementById('customerSearchResults').style.display = 'block';
+}
+
+function processAccountFreeze() {
+    const form = document.getElementById('accountFreezeForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.freezeAccount || !data.freezeReason || !data.freezeDescription) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    if (confirm(`Are you sure you want to freeze account ${data.freezeAccount}?\nReason: ${data.freezeReason}\nDuration: ${data.freezeDuration}`)) {
+        alert(`Account ${data.freezeAccount} has been frozen successfully!\nFreeze ID: FRZ-${Math.floor(Math.random() * 10000)}`);
+        $('#accountFreezeModal').modal('hide');
+        form.reset();
+        location.reload();
+    }
+}
+
+// Account functions
+function createAccount() {
+    const form = document.getElementById('newAccountForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    // Validate form
+    if (!data.accountHolder || !data.accountType || !data.initialDeposit) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Simulate account creation
+    alert('Account created successfully!\nAccount Number: ACC-' + Math.floor(Math.random() * 1000) + '-2024');
+    $('#newAccountModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function processTransaction() {
+    const form = document.getElementById('transactionForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    // Validate form
+    if (!data.fromAccount || !data.transactionType || !data.amount) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Simulate transaction processing
+    alert('Transaction processed successfully!\nTransaction ID: TXN-' + Math.floor(Math.random() * 10000));
+    $('#transactionModal').modal('hide');
+    form.reset();
+    location.reload();
+}
+
+function checkBalance() {
+    const accountNumber = document.getElementById('checkAccount').value;
+    if (!accountNumber) {
+        alert('Please select an account.');
+        return;
+    }
+    
+    // Simulate balance check
+    const balances = {
+        'ACC-001-2024': '$15,250.00',
+        'ACC-002-2024': '$8,750.50',
+        'ACC-003-2024': '$45,200.00'
+    };
+    
+    document.getElementById('balanceAmount').textContent = balances[accountNumber] || 'Account not found';
+    document.getElementById('balanceResult').style.display = 'block';
+}
+
+function generateReport() {
+    const form = document.getElementById('reportForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+    
+    if (!data.reportType || !data.reportDate) {
+        alert('Please fill in all required fields.');
+        return;
+    }
+    
+    // Simulate report generation
+    alert('Report generated successfully!\nReport ID: RPT-' + Math.floor(Math.random() * 10000));
+    $('#reportModal').modal('hide');
+    form.reset();
+}
+
+// Account management functions
+function viewAccount(accountNumber) {
+    alert('Viewing account: ' + accountNumber + '\nThis would open detailed account view.');
+}
+
+function editAccount(accountNumber) {
+    alert('Editing account: ' + accountNumber + '\nThis would open account edit form.');
+}
+
+function freezeAccount(accountNumber) {
+    if (confirm('Are you sure you want to freeze account ' + accountNumber + '?')) {
+        alert('Account ' + accountNumber + ' has been frozen.');
+    }
+}
+
+function viewCustomerDetails(accountNumber) {
+    alert('Viewing customer details for: ' + accountNumber + '\nThis would open detailed customer view.');
+}
+
+function editCustomer(accountNumber) {
+    alert('Editing customer: ' + accountNumber + '\nThis would open customer edit form.');
+}
+
+function loadRecentTransactions() {
+    const transactions = [
+        { type: 'Deposit', amount: '$500.00', account: 'ACC-001-2024', time: '14:30' },
+        { type: 'Withdrawal', amount: '$200.00', account: 'ACC-002-2024', time: '09:15' },
+        { type: 'Transfer', amount: '$1,000.00', account: 'ACC-003-2024', time: '16:45' },
+        { type: 'Payment', amount: '$150.00', account: 'ACC-001-2024', time: '11:20' }
+    ];
+    
+    let html = '<div class="list-group">';
+    transactions.forEach(txn => {
+        const badgeClass = txn.type === 'Deposit' ? 'badge-success' : 
+                          txn.type === 'Withdrawal' ? 'badge-danger' : 'badge-info';
+        html += `
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="badge ${badgeClass} mr-2">${txn.type}</span>
+                    <strong>${txn.amount}</strong>
+                </div>
+                <small class="text-muted">${txn.account} - ${txn.time}</small>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    document.getElementById('recentTransactions').innerHTML = html;
+}
+
+// Update cash count total when denominations change
+$(document).ready(function() {
+    $('#cashCountModal').on('show.bs.modal', function() {
+        updateCashCountTotal();
+    });
+    
+    $('#cashCountModal input[type="number"]').on('input', function() {
+        updateCashCountTotal();
+    });
+});
+
+function updateCashCountTotal() {
+    const hundreds = parseInt($('#countHundreds').val()) || 0;
+    const fifties = parseInt($('#countFifties').val()) || 0;
+    const twenties = parseInt($('#countTwenties').val()) || 0;
+    const tens = parseInt($('#countTens').val()) || 0;
+    const fives = parseInt($('#countFives').val()) || 0;
+    const ones = parseInt($('#countOnes').val()) || 0;
+    
+    const total = (hundreds * 100) + (fifties * 50) + (twenties * 20) + (tens * 10) + (fives * 5) + ones;
+    $('#totalCount').text(total.toFixed(2));
+}
+
+// Update the show functions to use real modals instead of alerts
+function showWireTransferModal() {
+    $('#wireTransferModal').modal('show');
+}
+
+function showForeignCheckModal() {
+    $('#foreignCheckModal').modal('show');
+}
+
+function showExchangeRateModal() {
+    $('#exchangeRateModal').modal('show');
+    loadExchangeRates();
+}
+
+function showAccountInquiryModal() {
+    $('#accountInquiryModal').modal('show');
+}
+
+function showDocumentRequestModal() {
+    $('#documentRequestModal').modal('show');
+}
+
+function showCustomerUpdateModal() {
+    $('#customerUpdateModal').modal('show');
+}
+
+function showFraudReportModal() {
+    $('#fraudReportModal').modal('show');
+}
+
+function showSuspiciousActivityModal() {
+    $('#suspiciousActivityModal').modal('show');
+}
+
+function showSecurityAlertModal() {
+    $('#securityAlertModal').modal('show');
+}
+
+function showTransactionReportModal() {
+    $('#transactionReportModal').modal('show');
+}
+
+function showCashFlowReportModal() {
+    $('#cashFlowReportModal').modal('show');
+}
+
+function showKycVerificationModal() {
+    $('#kycVerificationModal').modal('show');
+}
+
+function showRegulatoryReportModal() {
+    $('#regulatoryReportModal').modal('show');
+}
+
+// Helper function for form submission
+function handleFormSubmission(formId, alertId, endpoint, successMessage) {
+    const form = document.getElementById(formId);
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const alertBox = document.getElementById(alertId);
+            alertBox.innerHTML = '';
+            
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+            
+            try {
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success || result.message) {
+                    alertBox.innerHTML = `<div class="alert alert-success">${result.message || successMessage}</div>`;
+                    form.reset();
+                    setTimeout(() => {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById(formId.replace('Form', 'Modal')));
+                        if (modal) modal.hide();
+                    }, 1500);
+                } else {
+                    alertBox.innerHTML = `<div class="alert alert-danger">${result.error || 'Operation failed'}</div>`;
+                }
+            } catch (error) {
+                alertBox.innerHTML = '<div class="alert alert-danger">Error processing request</div>';
+            }
+        });
+    }
+}
+
+// Initialize form handlers
+document.addEventListener('DOMContentLoaded', function() {
+    // Wire Transfer
+    handleFormSubmission('wireTransferForm', 'wireTransferAlert', '/api/teller/wire/transfer', 'Wire transfer processed successfully');
+    
+    // Foreign Check
+    handleFormSubmission('foreignCheckForm', 'foreignCheckAlert', '/api/teller/check/deposit', 'Foreign check processed successfully');
+    
+    // Account Inquiry
+    handleFormSubmission('accountInquiryForm', 'accountInquiryAlert', '/api/teller/customer/search', 'Account inquiry completed');
+    
+    // Document Request
+    handleFormSubmission('documentRequestForm', 'documentRequestAlert', '/api/teller/statement/print', 'Document request submitted successfully');
+    
+    // Customer Update
+    handleFormSubmission('customerUpdateForm', 'customerUpdateAlert', '/api/teller/customer/search', 'Customer information updated successfully');
+    
+    // Fraud Report
+    handleFormSubmission('fraudReportForm', 'fraudReportAlert', '/api/teller/fraud/report', 'Fraud report submitted successfully');
+    
+    // Suspicious Activity
+    handleFormSubmission('suspiciousActivityForm', 'suspiciousActivityAlert', '/api/teller/fraud/report', 'Suspicious activity reported successfully');
+    
+    // Security Alert
+    handleFormSubmission('securityAlertForm', 'securityAlertAlert', '/api/teller/account/freeze', 'Security alert set successfully');
+    
+    // Transaction Report
+    handleFormSubmission('transactionReportForm', 'transactionReportAlert', '/api/teller/reports/transaction', 'Transaction report generated successfully');
+    
+    // Cash Flow Report
+    handleFormSubmission('cashFlowReportForm', 'cashFlowReportAlert', '/api/teller/reports/cashflow', 'Cash flow report generated successfully');
+    
+    // KYC Verification
+    handleFormSubmission('kycVerificationForm', 'kycVerificationAlert', '/api/teller/kyc/verify', 'KYC verification completed successfully');
+    
+    // Regulatory Report
+    handleFormSubmission('regulatoryReportForm', 'regulatoryReportAlert', '/api/teller/regulatory/report', 'Regulatory report generated successfully');
+});
+
+// Exchange rates functionality
+function loadExchangeRates() {
+    const rates = [
+        { currency: 'EUR', buy: 0.85, sell: 0.87, updated: '2024-01-15 14:30' },
+        { currency: 'GBP', buy: 0.73, sell: 0.75, updated: '2024-01-15 14:30' },
+        { currency: 'CAD', buy: 1.25, sell: 1.27, updated: '2024-01-15 14:30' },
+        { currency: 'AUD', buy: 1.35, sell: 1.37, updated: '2024-01-15 14:30' },
+        { currency: 'JPY', buy: 110.50, sell: 112.50, updated: '2024-01-15 14:30' }
+    ];
+    
+    let html = '';
+    rates.forEach(rate => {
+        html += `
+            <tr>
+                <td>${rate.currency}</td>
+                <td>$${rate.buy.toFixed(4)}</td>
+                <td>$${rate.sell.toFixed(4)}</td>
+                <td>${rate.updated}</td>
+            </tr>
+        `;
+    });
+    
+    document.getElementById('exchangeRateBody').innerHTML = html;
+}
+
+function refreshExchangeRates() {
+    loadExchangeRates();
+    document.getElementById('exchangeRateAlert').innerHTML = '<div class="alert alert-success">Exchange rates refreshed successfully</div>';
+}
+</script>
+{% endblock %} 

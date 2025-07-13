@@ -1,0 +1,1159 @@
+{% extends 'base.html' %}
+{% block title %}Customer Dashboard - Tobey Finance Bank{% endblock %}
+{% block page_title %}{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section mb-4">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <h1 class="hero-title">Welcome back, {{ profile.name.split()[0] }}! 👋</h1>
+        <p class="hero-subtitle">Here's your financial overview for today</p>
+      </div>
+      <div class="col-lg-4 text-end">
+        <div class="total-balance-card">
+          <h3 class="balance-label">Total Balance</h3>
+          <h2 class="balance-amount">${{ '{:,.2f}'.format(accounts|sum(attribute='balance')) }}</h2>
+          <span class="balance-change positive">+$2,450.00 this month</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Dashboard Content -->
+<div class="container-fluid">
+  <div class="row">
+    <!-- Main Content Area -->
+    <div class="col-lg-9">
+      <!-- Account Cards Section -->
+      <div class="section mb-4">
+        <div class="section-header">
+          <h3>Your Accounts</h3>
+          <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#newAccountModal">
+            <i class="fas fa-plus"></i> Open New Account
+          </button>
+        </div>
+        <div class="row">
+          {% for acc in accounts %}
+          <div class="col-md-6 mb-3">
+            <div class="account-card">
+              <div class="account-card-header">
+                <div class="account-icon">
+                  <i class="fas fa-{{ 'credit-card' if acc.type == 'Checking' else 'piggy-bank' }}"></i>
+                </div>
+                <div class="account-status">
+                  <span class="status-badge {{ 'active' if acc.status == 'Active' else 'inactive' }}">
+                    {{ acc.status }}
+                  </span>
+                </div>
+              </div>
+              <div class="account-card-body">
+                <h4 class="account-name">{{ acc.type }} Account</h4>
+                <p class="account-number">****{{ acc.number[-4:] }}</p>
+                <div class="account-balance">
+                  <span class="balance-currency">{{ acc.currency }}</span>
+                  <span class="balance-amount">${{ '{:,.2f}'.format(acc.balance) }}</span>
+                </div>
+              </div>
+              <div class="account-card-actions">
+                <button class="action-btn" data-bs-toggle="modal" data-bs-target="#transferModal">
+                  <i class="fas fa-exchange-alt"></i> Transfer
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-download"></i> Statement
+                </button>
+                <button class="action-btn">
+                  <i class="fas fa-cog"></i> Settings
+                </button>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Quick Actions Section -->
+      <div class="section mb-4">
+        <h3>Quick Actions</h3>
+        <div class="quick-actions-grid">
+          <div class="quick-action-card" data-bs-toggle="modal" data-bs-target="#transferModal">
+            <div class="action-icon transfer">
+              <i class="fas fa-exchange-alt"></i>
+            </div>
+            <h5>Transfer Money</h5>
+            <p>Send money to accounts or people</p>
+          </div>
+          <div class="quick-action-card" data-bs-toggle="modal" data-bs-target="#billPayModal">
+            <div class="action-icon bill">
+              <i class="fas fa-file-invoice-dollar"></i>
+            </div>
+            <h5>Pay Bills</h5>
+            <p>Pay utilities and other bills</p>
+          </div>
+          <div class="quick-action-card">
+            <div class="action-icon deposit">
+              <i class="fas fa-plus-circle"></i>
+            </div>
+            <h5>Deposit</h5>
+            <p>Deposit checks or cash</p>
+          </div>
+          <div class="quick-action-card">
+            <div class="action-icon withdraw">
+              <i class="fas fa-minus-circle"></i>
+            </div>
+            <h5>Withdraw</h5>
+            <p>Withdraw cash from ATM</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Transactions Section -->
+      <div class="section mb-4">
+        <div class="section-header">
+          <h3>Recent Transactions</h3>
+          <div class="section-actions">
+            <button class="btn btn-outline-secondary btn-sm">
+              <i class="fas fa-download"></i> Export
+            </button>
+            <button class="btn btn-primary btn-sm">
+              <i class="fas fa-list"></i> View All
+            </button>
+          </div>
+        </div>
+        <div class="transactions-table">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Description</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Balance</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for txn in recent_transactions %}
+                <tr class="transaction-row">
+                  <td>
+                    <div class="transaction-date">
+                      <span class="date-day">{{ txn.date.split('-')[2] }}</span>
+                      <span class="date-month">{{ txn.date.split('-')[1] }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="transaction-info">
+                      <strong>{{ txn.description }}</strong>
+                      <small class="text-muted">Account: {{ txn.account }}</small>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="transaction-type {{ txn.type.lower() }}">
+                      <i class="fas fa-{{ 'arrow-down' if txn.amount > 0 else 'arrow-up' }}"></i>
+                      {{ txn.type }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="amount {{ 'positive' if txn.amount > 0 else 'negative' }}">
+                      {{ '+' if txn.amount > 0 else '' }}${{ '{:,.2f}'.format(txn.amount) }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="balance">${{ '{:,.2f}'.format(txn.balance) }}</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-3">
+      <!-- Cards Summary -->
+      <div class="sidebar-section mb-4">
+        <h4>Your Cards</h4>
+        {% for card in cards %}
+        <div class="card-item">
+          <div class="card-info">
+            <div class="card-type">{{ card.type }}</div>
+            <div class="card-number">{{ card.number }}</div>
+            <div class="card-expiry">Expires {{ card.expiry }}</div>
+          </div>
+          <div class="card-status">
+            <span class="status-dot {{ 'active' if card.status == 'Active' else 'blocked' }}"></span>
+            {{ card.status }}
+          </div>
+        </div>
+        {% endfor %}
+        <button class="btn btn-outline-primary btn-sm w-100 mt-2">
+          <i class="fas fa-plus"></i> Add New Card
+        </button>
+      </div>
+
+      <!-- Loans Summary -->
+      <div class="sidebar-section mb-4">
+        <h4>Active Loans</h4>
+        {% for loan in loans %}
+        <div class="loan-item">
+          <div class="loan-info">
+            <div class="loan-type">{{ loan.type }}</div>
+            <div class="loan-balance">Balance: ${{ '{:,.2f}'.format(loan.balance) }}</div>
+            <div class="loan-emi">EMI: ${{ '{:,.2f}'.format(loan.emi) }}</div>
+          </div>
+          <div class="loan-status">
+            <span class="status-badge {{ 'active' if loan.status == 'Active' else 'pending' }}">
+              {{ loan.status }}
+            </span>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Quick Stats -->
+      <div class="sidebar-section mb-4">
+        <h4>This Month</h4>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value positive">+$5,240</div>
+            <div class="stat-label">Income</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value negative">-$1,890</div>
+            <div class="stat-label">Spent</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">$3,350</div>
+            <div class="stat-label">Saved</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Support -->
+      <div class="sidebar-section">
+        <h4>Need Help?</h4>
+        <div class="support-actions">
+          <button class="btn btn-outline-info btn-sm w-100 mb-2" data-bs-toggle="modal" data-bs-target="#supportModal">
+            <i class="fas fa-headset"></i> Get Support
+          </button>
+          <button class="btn btn-outline-secondary btn-sm w-100">
+            <i class="fas fa-phone"></i> Call Us
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Transfer Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-exchange-alt text-primary"></i> Transfer Money
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="transferForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">From Account</label>
+                <select class="form-select" name="from_account" required>
+                  <option value="">Select account</option>
+                  {% for acc in accounts %}
+                  <option value="{{ acc.number }}">
+                    {{ acc.type }} - ${{ '{:,.2f}'.format(acc.balance) }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Transfer Type</label>
+                <select class="form-select" name="transfer_type" required>
+                  <option value="">Select type</option>
+                  <option value="internal">Between my accounts</option>
+                  <option value="external">To another bank</option>
+                  <option value="person">To a person</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">To Account/Person</label>
+                <input type="text" class="form-control" name="to_account" placeholder="Account number or email" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <input type="text" class="form-control" name="description" placeholder="What's this transfer for?">
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Transfer Date</label>
+            <select class="form-select" name="transfer_date">
+              <option value="now">Transfer now</option>
+              <option value="scheduled">Schedule for later</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="submitTransfer()">
+          <i class="fas fa-paper-plane"></i> Send Transfer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Bill Pay Modal -->
+<div class="modal fade" id="billPayModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-file-invoice-dollar text-info"></i> Pay Bills
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="billPayForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">From Account</label>
+                <select class="form-select" name="from_account" required>
+                  <option value="">Select account</option>
+                  {% for acc in accounts %}
+                  <option value="{{ acc.number }}">
+                    {{ acc.type }} - ${{ '{:,.2f}'.format(acc.balance) }}
+                  </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Payee</label>
+                <select class="form-select" name="payee" required>
+                  <option value="">Select payee</option>
+                  {% for payee in payees %}
+                  <option value="{{ payee.account }}">{{ payee.name }} ({{ payee.bank }})</option>
+                  {% endfor %}
+                  <option value="new">+ Add New Payee</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" name="amount" min="1" step="0.01" placeholder="0.00" required>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group mb-3">
+                <label class="form-label">Due Date</label>
+                <input type="date" class="form-control" name="due_date">
+              </div>
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" class="form-control" name="description" placeholder="e.g., Electricity bill for July">
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" name="recurring" id="recurringCheck">
+            <label class="form-check-label" for="recurringCheck">
+              Set up recurring payment
+            </label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info" onclick="submitBillPay()">
+          <i class="fas fa-credit-card"></i> Pay Bill
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Enhanced Support Modal -->
+<div class="modal fade" id="supportModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-headset text-warning"></i> Get Support
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="supportForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" name="category" required>
+              <option value="">Select category</option>
+              <option value="account">Account Issues</option>
+              <option value="card">Card Problems</option>
+              <option value="transfer">Transfer Issues</option>
+              <option value="loan">Loan Questions</option>
+              <option value="security">Security Concerns</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Priority</label>
+            <select class="form-select" name="priority" required>
+              <option value="">Select priority</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-control" name="subject" placeholder="Brief description of your issue" required>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="4" placeholder="Please provide detailed information about your issue..." required></textarea>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Contact Preference</label>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="contact_preference" value="email" id="emailPref" checked>
+              <label class="form-check-label" for="emailPref">Email</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="contact_preference" value="phone" id="phonePref">
+              <label class="form-check-label" for="phonePref">Phone</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-warning" onclick="submitSupport()">
+          <i class="fas fa-paper-plane"></i> Submit Ticket
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Account Modal -->
+<div class="modal fade" id="newAccountModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-plus-circle text-success"></i> Open New Account
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="newAccountForm">
+          <div class="form-group mb-3">
+            <label class="form-label">Account Type</label>
+            <select class="form-select" name="account_type" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking Account</option>
+              <option value="savings">Savings Account</option>
+              <option value="cd">Certificate of Deposit</option>
+              <option value="ira">Individual Retirement Account</option>
+            </select>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Initial Deposit</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="initial_deposit" min="0" step="0.01" placeholder="0.00">
+            </div>
+          </div>
+          <div class="form-group mb-3">
+            <label class="form-label">Account Purpose</label>
+            <textarea class="form-control" name="purpose" rows="3" placeholder="What will you use this account for?"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="submitNewAccount()">
+          <i class="fas fa-check"></i> Open Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 2rem 0;
+  border-radius: 0 0 20px 20px;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.total-balance-card {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1.5rem;
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.balance-label {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.balance-amount {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.balance-change {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.balance-change.positive {
+  color: #28a745;
+}
+
+/* Section Styling */
+.section {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Account Cards */
+.account-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: 1px solid #e9ecef;
+}
+
+.account-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.account-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.account-icon {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.2rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.account-name {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.account-number {
+  color: #6c757d;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.account-balance {
+  margin-bottom: 1rem;
+}
+
+.balance-currency {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.balance-amount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.account-card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.action-btn {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #e9ecef;
+  background: white;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+  background: #f8f9fa;
+  border-color: #667eea;
+  color: #667eea;
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.quick-action-card {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  border: 1px solid #e9ecef;
+}
+
+.quick-action-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.action-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.action-icon.transfer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-icon.bill {
+  background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+}
+
+.action-icon.deposit {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.action-icon.withdraw {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.quick-action-card h5 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.quick-action-card p {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Transactions Table */
+.transactions-table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.transaction-row {
+  transition: background-color 0.3s ease;
+}
+
+.transaction-row:hover {
+  background-color: #f8f9fa;
+}
+
+.transaction-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.date-day {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.date-month {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.transaction-type.deposit {
+  background: #d4edda;
+  color: #155724;
+}
+
+.transaction-type.withdrawal {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.transaction-type.transfer {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.transaction-type.payment {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.amount.positive {
+  color: #28a745;
+}
+
+.amount.negative {
+  color: #dc3545;
+}
+
+.balance {
+  font-weight: 500;
+  color: #6c757d;
+}
+
+/* Sidebar */
+.sidebar-section {
+  background: white;
+  border-radius: 15px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+.sidebar-section h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-item, .loan-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.card-item:last-child, .loan-item:last-child {
+  border-bottom: none;
+}
+
+.card-info, .loan-info {
+  flex: 1;
+}
+
+.card-type, .loan-type {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.card-number, .loan-balance {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 0.25rem;
+}
+
+.card-expiry, .loan-emi {
+  font-size: 0.8rem;
+  color: #adb5bd;
+}
+
+.card-status, .loan-status {
+  text-align: right;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 0.5rem;
+}
+
+.status-dot.active {
+  background: #28a745;
+}
+
+.status-dot.blocked {
+  background: #dc3545;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.stat-item {
+  text-align: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.stat-value.positive {
+  color: #28a745;
+}
+
+.stat-value.negative {
+  color: #dc3545;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+/* Support Actions */
+.support-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .account-card-actions {
+    flex-direction: column;
+  }
+}
+
+/* Modal Enhancements */
+.modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  border-bottom: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.modal-body {
+  padding: 1.5rem;
+}
+
+.modal-footer {
+  border-top: 1px solid #e9ecef;
+  padding: 1.5rem;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  padding: 0.75rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #667eea;
+  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+.btn {
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+}
+
+.btn-info {
+  background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+  border: none;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border: none;
+}
+
+.btn-warning {
+  background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+  border: none;
+}
+
+/* Dark Mode Support */
+[data-theme="dark"] .section,
+[data-theme="dark"] .account-card,
+[data-theme="dark"] .quick-action-card,
+[data-theme="dark"] .sidebar-section,
+[data-theme="dark"] .transactions-table {
+  background: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .hero-section {
+  background: linear-gradient(135deg, #2a2a3e 0%, #1a1a2e 100%);
+}
+
+[data-theme="dark"] .total-balance-card {
+  background: rgba(255, 255, 255, 0.05);
+}
+</style>
+
+<script>
+function submitTransfer() {
+  const form = document.getElementById('transferForm');
+  const formData = new FormData(form);
+  
+  // Show loading state
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  btn.disabled = true;
+  
+  // Simulate API call
+  setTimeout(() => {
+    alert('Transfer submitted successfully! (Mock)');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
+    form.reset();
+  }, 2000);
+}
+
+function submitBillPay() {
+  const form = document.getElementById('billPayForm');
+  const formData = new FormData(form);
+  
+  // Show loading state
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  btn.disabled = true;
+  
+  // Simulate API call
+  setTimeout(() => {
+    alert('Bill payment submitted successfully! (Mock)');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    bootstrap.Modal.getInstance(document.getElementById('billPayModal')).hide();
+    form.reset();
+  }, 2000);
+}
+
+function submitSupport() {
+  const form = document.getElementById('supportForm');
+  const formData = new FormData(form);
+  
+  // Show loading state
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+  btn.disabled = true;
+  
+  // Simulate API call
+  setTimeout(() => {
+    alert('Support ticket submitted successfully! (Mock)');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    bootstrap.Modal.getInstance(document.getElementById('supportModal')).hide();
+    form.reset();
+  }, 2000);
+}
+
+function submitNewAccount() {
+  const form = document.getElementById('newAccountForm');
+  const formData = new FormData(form);
+  
+  // Show loading state
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  btn.disabled = true;
+  
+  // Simulate API call
+  setTimeout(() => {
+    alert('New account opened successfully! (Mock)');
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    bootstrap.Modal.getInstance(document.getElementById('newAccountModal')).hide();
+    form.reset();
+  }, 2000);
+}
+
+// Add smooth animations
+document.addEventListener('DOMContentLoaded', function() {
+  // Animate cards on load
+  const cards = document.querySelectorAll('.account-card, .quick-action-card');
+  cards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      card.style.transition = 'all 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
+  
+  // Add click handlers for quick actions
+  document.querySelectorAll('.quick-action-card').forEach(card => {
+    card.addEventListener('click', function() {
+      this.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        this.style.transform = '';
+      }, 150);
+    });
+  });
+});
+</script>
+{% endblock %} 

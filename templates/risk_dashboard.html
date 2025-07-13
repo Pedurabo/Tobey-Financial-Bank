@@ -1,0 +1,1240 @@
+{% extends "base.html" %}
+
+{% block title %}Risk Management Dashboard - Tobey Finance Bank{% endblock %}
+
+{% block page_title %}Risk Management Department{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Welcome Message Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card bg-gradient-danger text-white shadow">
+        <div class="card-body">
+          <div class="row align-items-center">
+            <div class="col-8">
+              <h4 class="card-title mb-2">
+                <i class="fas fa-shield-alt me-2"></i>
+                Welcome to Risk Management Operations!
+              </h4>
+              <h5 class="mb-1">
+                {{ current_user.employee.first_name }} {{ current_user.employee.last_name }}
+              </h5>
+              <p class="card-text mb-2">
+                <i class="fas fa-building me-2"></i>{{ current_user.department.value }} | 
+                <i class="fas fa-user-shield me-2"></i>{{ current_user.role.value.title() }} Access
+              </p>
+              <p class="card-text mb-0">
+                <i class="fas fa-chart-line me-2"></i>
+                Monitoring risk exposure and ensuring regulatory compliance
+              </p>
+            </div>
+            <div class="col-4 text-end">
+              <div class="text-white-50">
+                <i class="fas fa-exclamation-triangle fa-3x"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Metrics Cards -->
+  <div class="row mb-4">
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-danger shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Total Exposure</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "{:,.0f}".format(total_exposure) }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-warning shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Daily VaR</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">${{ "{:,.0f}".format(var_daily) }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-success shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Capital Ratio</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ capital_ratio }}%</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-university fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-info shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Compliance Score</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ compliance_score }}%</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-clipboard-check fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-dark shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-dark text-uppercase mb-1">Fraud Alerts</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ fraud_alerts }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-user-secret fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-2 col-md-4 mb-4">
+      <div class="card border-left-primary shadow h-100 py-2">
+        <div class="card-body">
+          <div class="row no-gutters align-items-center">
+            <div class="col mr-2">
+              <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">High Risk Accounts</div>
+              <div class="h5 mb-0 font-weight-bold text-gray-800">{{ high_risk_accounts }}</div>
+            </div>
+            <div class="col-auto">
+              <i class="fas fa-users fa-2x text-gray-300"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Management Operations -->
+  <div class="row g-3 mb-4">
+    <!-- Credit Risk Assessment -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-danger text-white">
+          <i class="fas fa-calculator me-2"></i>Credit Risk Assessment
+        </div>
+        <div class="card-body">
+          <button class="btn btn-danger mb-2 w-100" onclick="openModal('creditRiskModal')">
+            <i class="fas fa-search me-2"></i>Risk Assessment
+          </button>
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('creditLimitModal')">
+            <i class="fas fa-credit-card me-2"></i>Credit Limit Review
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('collateralModal')">
+            <i class="fas fa-home me-2"></i>Collateral Valuation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insurance Policy Management -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-primary text-white">
+          <i class="fas fa-shield-alt me-2"></i>Insurance Policies
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success mb-2 w-100" onclick="openModal('newPolicyModal')">
+            <i class="fas fa-plus me-2"></i>New Policy
+          </button>
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('claimProcessModal')">
+            <i class="fas fa-file-alt me-2"></i>Process Claim
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('policyReviewModal')">
+            <i class="fas fa-eye me-2"></i>Policy Review
+          </button>
+          <button class="btn btn-secondary mb-2 w-100" onclick="openModal('premiumCalculatorModal')">
+            <i class="fas fa-calculator me-2"></i>Premium Calculator
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fraud Detection & Monitoring -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-dark text-white">
+          <i class="fas fa-user-secret me-2"></i>Fraud Detection
+        </div>
+        <div class="card-body">
+          <button class="btn btn-danger mb-2 w-100" onclick="openModal('fraudAlertModal')">
+            <i class="fas fa-exclamation-triangle me-2"></i>Create Alert
+          </button>
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('suspiciousActivityModal')">
+            <i class="fas fa-search me-2"></i>Suspicious Activity
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('fraudInvestigationModal')">
+            <i class="fas fa-detective me-2"></i>Investigation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Compliance & Regulatory -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-success text-white">
+          <i class="fas fa-balance-scale me-2"></i>Compliance & Regulatory
+        </div>
+        <div class="card-body">
+          <button class="btn btn-success mb-2 w-100" onclick="openModal('complianceReportModal')">
+            <i class="fas fa-file-alt me-2"></i>Generate Report
+          </button>
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('regulatoryFilingModal')">
+            <i class="fas fa-upload me-2"></i>Regulatory Filing
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('amlMonitoringModal')">
+            <i class="fas fa-eye me-2"></i>AML Monitoring
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Portfolio Risk Analysis -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-info text-white">
+          <i class="fas fa-chart-line me-2"></i>Portfolio Risk Analysis
+        </div>
+        <div class="card-body">
+          <button class="btn btn-primary mb-2 w-100" onclick="openModal('portfolioAnalysisModal')">
+            <i class="fas fa-chart-pie me-2"></i>Portfolio Analysis
+          </button>
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('stressTestModal')">
+            <i class="fas fa-chart-bar me-2"></i>Stress Testing
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('varCalculationModal')">
+            <i class="fas fa-calculator me-2"></i>VaR Calculation
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Market Risk Monitoring -->
+    <div class="col-md-4">
+      <div class="card shadow-sm mb-3">
+        <div class="card-header bg-warning text-dark">
+          <i class="fas fa-chart-area me-2"></i>Market Risk Monitoring
+        </div>
+        <div class="card-body">
+          <button class="btn btn-warning mb-2 w-100" onclick="openModal('marketRiskModal')">
+            <i class="fas fa-chart-line me-2"></i>Market Risk Dashboard
+          </button>
+          <button class="btn btn-info mb-2 w-100" onclick="openModal('interestRateRiskModal')">
+            <i class="fas fa-percentage me-2"></i>Interest Rate Risk
+          </button>
+          <button class="btn btn-secondary mb-2 w-100" onclick="openModal('currencyRiskModal')">
+            <i class="fas fa-coins me-2"></i>Currency Risk
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Insurance Policies Table -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0"><i class="fas fa-shield-alt text-primary"></i> Insurance Policies Overview</h5>
+          <div>
+            <button class="btn btn-primary btn-sm" onclick="openModal('newPolicyModal')">
+              <i class="fas fa-plus me-1"></i>New Policy
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive" style="max-height: 400px;">
+            <table class="table table-hover table-striped align-middle mb-0">
+              <thead class="table-primary sticky-top">
+                <tr>
+                  <th>Policy ID</th>
+                  <th>Customer</th>
+                  <th>Type</th>
+                  <th>Premium</th>
+                  <th>Coverage</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for policy in insurance_policies %}
+                <tr>
+                  <td>{{ policy.id }}</td>
+                  <td>{{ policy.customer }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ policy.type }}</span>
+                  </td>
+                  <td>${{ "{:,.0f}".format(policy.premium) }}</td>
+                  <td>${{ "{:,.0f}".format(policy.coverage) }}</td>
+                  <td>
+                    {% if policy.status == 'Active' %}
+                      <span class="badge bg-success">{{ policy.status }}</span>
+                    {% elif policy.status == 'Pending' %}
+                      <span class="badge bg-warning">{{ policy.status }}</span>
+                    {% else %}
+                      <span class="badge bg-info">{{ policy.status }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="viewPolicy('{{ policy.id }}')">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-warning" onclick="editPolicy('{{ policy.id }}')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Risk Alerts -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0"><i class="fas fa-exclamation-triangle text-danger"></i> Recent Risk Alerts</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th>Alert ID</th>
+                  <th>Type</th>
+                  <th>Account/Portfolio</th>
+                  <th>Severity</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for alert in recent_alerts %}
+                <tr>
+                  <td>{{ alert.id }}</td>
+                  <td>{{ alert.type }}</td>
+                  <td>{{ alert.account or alert.portfolio or alert.system or alert.threshold }}</td>
+                  <td>
+                    {% if alert.severity == 'Critical' %}
+                      <span class="badge bg-danger">{{ alert.severity }}</span>
+                    {% elif alert.severity == 'High' %}
+                      <span class="badge bg-warning">{{ alert.severity }}</span>
+                    {% elif alert.severity == 'Medium' %}
+                      <span class="badge bg-info">{{ alert.severity }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">{{ alert.severity }}</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ alert.date }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary" onclick="investigateAlert('{{ alert.id }}')">
+                      <i class="fas fa-search"></i> Investigate
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Risk Metrics Summary -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Risk Metrics Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Credit Risk Score:</strong> {{ risk_metrics.credit_risk_score }}/10</p>
+              <p><strong>Market Risk Score:</strong> {{ risk_metrics.market_risk_score }}/10</p>
+              <p><strong>Operational Risk:</strong> {{ risk_metrics.operational_risk_score }}/10</p>
+            </div>
+            <div class="col-6">
+              <p><strong>Liquidity Ratio:</strong> {{ risk_metrics.liquidity_ratio }}%</p>
+              <p><strong>Leverage Ratio:</strong> {{ risk_metrics.leverage_ratio }}%</p>
+              <p><strong>Stress Test:</strong> 
+                <span class="badge bg-success">{{ risk_metrics.stress_test_result }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-warning text-dark">
+          <h6 class="mb-0"><i class="fas fa-shield-alt me-2"></i>Insurance Portfolio Summary</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6">
+              <p><strong>Total Policies:</strong> {{ total_policies }}</p>
+              <p><strong>Active Policies:</strong> {{ active_policies }}</p>
+            </div>
+            <div class="col-6">
+              <p><strong>Pending Claims:</strong> {{ pending_claims }}</p>
+              <p><strong>Claims Ratio:</strong> 3.2%</p>
+            </div>
+          </div>
+          <div class="progress mt-2">
+            <div class="progress-bar bg-success" role="progressbar" style="width: {{ (active_policies / total_policies * 100)|round }}%">
+              {{ (active_policies / total_policies * 100)|round }}% Active
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credit Risk Assessment Modal -->
+<div class="modal fade" id="creditRiskModal" tabindex="-1" aria-labelledby="creditRiskModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="creditRiskModalLabel">
+          <i class="fas fa-calculator text-danger"></i> Credit Risk Assessment
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="creditRiskForm">
+        <div class="modal-body">
+          <div id="creditRiskAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="riskAccountNumber" class="form-label">Account Number</label>
+              <input type="text" class="form-control" id="riskAccountNumber" name="account_number" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="assessmentType" class="form-label">Assessment Type</label>
+              <select class="form-select" id="assessmentType" name="assessment_type">
+                <option value="credit">Credit Risk</option>
+                <option value="market">Market Risk</option>
+                <option value="operational">Operational Risk</option>
+                <option value="liquidity">Liquidity Risk</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="loanAmount" class="form-label">Loan Amount ($)</label>
+              <input type="number" class="form-control" id="loanAmount" name="loan_amount" step="0.01">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="customerIncome" class="form-label">Annual Income ($)</label>
+              <input type="number" class="form-control" id="customerIncome" name="customer_income" step="0.01">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="collateralValue" class="form-label">Collateral Value ($)</label>
+            <input type="number" class="form-control" id="collateralValue" name="collateral_value" step="0.01">
+          </div>
+
+          <div class="mb-3">
+            <label for="riskNotes" class="form-label">Assessment Notes</label>
+            <textarea class="form-control" id="riskNotes" name="notes" rows="3"></textarea>
+          </div>
+
+          <!-- Risk Assessment Results (populated after submission) -->
+          <div id="riskResults" class="mt-4" style="display: none;">
+            <h6 class="text-primary">Assessment Results:</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Credit Score:</strong> <span id="resultCreditScore"></span></p>
+                <p><strong>Risk Level:</strong> <span id="resultRiskLevel"></span></p>
+                <p><strong>Debt-to-Income:</strong> <span id="resultDebtRatio"></span></p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Payment Score:</strong> <span id="resultPaymentScore"></span>/10</p>
+                <p><strong>Account Age:</strong> <span id="resultAccountAge"></span> months</p>
+              </div>
+            </div>
+            <div class="mt-3">
+              <h6 class="text-info">Recommendations:</h6>
+              <ul id="resultRecommendations"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Perform Assessment</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- New Insurance Policy Modal -->
+<div class="modal fade" id="newPolicyModal" tabindex="-1" aria-labelledby="newPolicyModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newPolicyModalLabel">
+          <i class="fas fa-shield-alt text-primary"></i> Create New Insurance Policy
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="newPolicyForm">
+        <div class="modal-body">
+          <div id="newPolicyAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="policyCustomerId" class="form-label">Customer ID</label>
+              <input type="text" class="form-control" id="policyCustomerId" name="customer_id" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="policyType" class="form-label">Policy Type</label>
+              <select class="form-select" id="policyType" name="policy_type" required>
+                <option value="">Select Policy Type</option>
+                <option value="Life Insurance">Life Insurance</option>
+                <option value="Health Insurance">Health Insurance</option>
+                <option value="Auto Insurance">Auto Insurance</option>
+                <option value="Home Insurance">Home Insurance</option>
+                <option value="Business Insurance">Business Insurance</option>
+                <option value="Travel Insurance">Travel Insurance</option>
+                <option value="Disability Insurance">Disability Insurance</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="coverageAmount" class="form-label">Coverage Amount ($)</label>
+              <input type="number" class="form-control" id="coverageAmount" name="coverage_amount" required step="0.01" min="1000">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="premiumAmount" class="form-label">Annual Premium ($)</label>
+              <input type="number" class="form-control" id="premiumAmount" name="premium_amount" required step="0.01" min="100">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="termYears" class="form-label">Term (Years)</label>
+              <input type="number" class="form-control" id="termYears" name="term_years" min="1" max="50">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="deductible" class="form-label">Deductible ($)</label>
+              <input type="number" class="form-control" id="deductible" name="deductible" step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="beneficiaries" class="form-label">Beneficiaries (comma-separated)</label>
+            <textarea class="form-control" id="beneficiaries" name="beneficiaries" rows="2" placeholder="John Doe, Jane Smith, etc."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="policyConditions" class="form-label">Special Conditions</label>
+            <textarea class="form-control" id="policyConditions" name="conditions" rows="3"></textarea>
+          </div>
+
+          <!-- Premium Calculation Section -->
+          <div class="card bg-light mt-3">
+            <div class="card-header">
+              <h6 class="mb-0">Premium Calculation Factors</h6>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-4 mb-2">
+                  <label for="customerAge" class="form-label">Customer Age</label>
+                  <input type="number" class="form-control form-control-sm" id="customerAge" name="customer_age" min="18" max="100">
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label for="riskProfile" class="form-label">Risk Profile</label>
+                  <select class="form-select form-select-sm" id="riskProfile" name="risk_profile">
+                    <option value="Low">Low Risk</option>
+                    <option value="Medium">Medium Risk</option>
+                    <option value="High">High Risk</option>
+                  </select>
+                </div>
+                <div class="col-md-4 mb-2">
+                  <label for="medicalHistory" class="form-label">Medical History</label>
+                  <select class="form-select form-select-sm" id="medicalHistory" name="medical_history">
+                    <option value="Excellent">Excellent</option>
+                    <option value="Good">Good</option>
+                    <option value="Fair">Fair</option>
+                    <option value="Poor">Poor</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-info" onclick="calculatePremium()">Calculate Premium</button>
+          <button type="submit" class="btn btn-primary">Create Policy</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Insurance Claim Processing Modal -->
+<div class="modal fade" id="claimProcessModal" tabindex="-1" aria-labelledby="claimProcessModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="claimProcessModalLabel">
+          <i class="fas fa-file-alt text-warning"></i> Process Insurance Claim
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="claimProcessForm">
+        <div class="modal-body">
+          <div id="claimProcessAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="claimPolicyNumber" class="form-label">Policy Number</label>
+              <input type="text" class="form-control" id="claimPolicyNumber" name="policy_number" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="claimType" class="form-label">Claim Type</label>
+              <select class="form-select" id="claimType" name="claim_type" required>
+                <option value="">Select Claim Type</option>
+                <option value="Accident">Accident</option>
+                <option value="Illness">Illness</option>
+                <option value="Property Damage">Property Damage</option>
+                <option value="Theft">Theft</option>
+                <option value="Natural Disaster">Natural Disaster</option>
+                <option value="Death Benefit">Death Benefit</option>
+                <option value="Disability">Disability</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="claimAmount" class="form-label">Claim Amount ($)</label>
+              <input type="number" class="form-control" id="claimAmount" name="claim_amount" required step="0.01" min="1">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="incidentDate" class="form-label">Incident Date</label>
+              <input type="date" class="form-control" id="incidentDate" name="incident_date" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="claimDescription" class="form-label">Incident Description</label>
+            <textarea class="form-control" id="claimDescription" name="description" rows="4" required placeholder="Detailed description of the incident..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="supportingDocuments" class="form-label">Supporting Documents</label>
+            <input type="file" class="form-control" id="supportingDocuments" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+            <div class="form-text">Upload police reports, medical records, receipts, photos, etc.</div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="witnessName" class="form-label">Witness Name (if applicable)</label>
+              <input type="text" class="form-control" id="witnessName" name="witness_name">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="witnessContact" class="form-label">Witness Contact</label>
+              <input type="text" class="form-control" id="witnessContact" name="witness_contact">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="fraudCheck" name="fraud_check">
+              <label class="form-check-label" for="fraudCheck">
+                Flag for potential fraud investigation
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-warning">Process Claim</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Fraud Alert Modal -->
+<div class="modal fade" id="fraudAlertModal" tabindex="-1" aria-labelledby="fraudAlertModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="fraudAlertModalLabel">
+          <i class="fas fa-exclamation-triangle text-danger"></i> Create Fraud Alert
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="fraudAlertForm">
+        <div class="modal-body">
+          <div id="fraudAlertAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="fraudAccountNumber" class="form-label">Account Number</label>
+              <input type="text" class="form-control" id="fraudAccountNumber" name="account_number" required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="fraudAlertType" class="form-label">Alert Type</label>
+              <select class="form-select" id="fraudAlertType" name="alert_type" required>
+                <option value="">Select Alert Type</option>
+                <option value="Identity Theft">Identity Theft</option>
+                <option value="Account Takeover">Account Takeover</option>
+                <option value="Card Fraud">Card Fraud</option>
+                <option value="Check Fraud">Check Fraud</option>
+                <option value="Wire Fraud">Wire Fraud</option>
+                <option value="Money Laundering">Money Laundering</option>
+                <option value="Suspicious Transactions">Suspicious Transactions</option>
+                <option value="Phishing">Phishing</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="fraudSeverity" class="form-label">Severity Level</label>
+              <select class="form-select" id="fraudSeverity" name="severity" required>
+                <option value="">Select Severity</option>
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Critical">Critical</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="detectionMethod" class="form-label">Detection Method</label>
+              <select class="form-select" id="detectionMethod" name="detection_method">
+                <option value="">Select Method</option>
+                <option value="Automated System">Automated System</option>
+                <option value="Customer Report">Customer Report</option>
+                <option value="Manual Review">Manual Review</option>
+                <option value="External Report">External Report</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="fraudDescription" class="form-label">Detailed Description</label>
+            <textarea class="form-control" id="fraudDescription" name="description" rows="4" required placeholder="Detailed description of the suspicious activity..."></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label for="transactionIds" class="form-label">Related Transaction IDs (comma-separated)</label>
+            <input type="text" class="form-control" id="transactionIds" name="transaction_ids" placeholder="TXN001, TXN002, etc.">
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="suspectedAmount" class="form-label">Suspected Loss Amount ($)</label>
+              <input type="number" class="form-control" id="suspectedAmount" name="suspected_amount" step="0.01" min="0">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="investigationPriority" class="form-label">Investigation Priority</label>
+              <select class="form-select" id="investigationPriority" name="priority">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+                <option value="Urgent">Urgent</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="immediateAction" name="immediate_action">
+              <label class="form-check-label" for="immediateAction">
+                Requires immediate account suspension
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Create Alert</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Compliance Report Modal -->
+<div class="modal fade" id="complianceReportModal" tabindex="-1" aria-labelledby="complianceReportModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="complianceReportModalLabel">
+          <i class="fas fa-file-alt text-success"></i> Generate Compliance Report
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="complianceReportForm">
+        <div class="modal-body">
+          <div id="complianceReportAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="reportType" class="form-label">Report Type</label>
+              <select class="form-select" id="reportType" name="report_type" required>
+                <option value="">Select Report Type</option>
+                <option value="AML">Anti-Money Laundering (AML)</option>
+                <option value="KYC">Know Your Customer (KYC)</option>
+                <option value="SAR">Suspicious Activity Report (SAR)</option>
+                <option value="CTR">Currency Transaction Report (CTR)</option>
+                <option value="OFAC">OFAC Compliance</option>
+                <option value="Basel III">Basel III Capital Adequacy</option>
+                <option value="Stress Test">Regulatory Stress Test</option>
+                <option value="Risk Assessment">Risk Assessment Report</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="reportPeriod" class="form-label">Reporting Period</label>
+              <select class="form-select" id="reportPeriod" name="report_period">
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Monthly">Monthly</option>
+                <option value="Quarterly">Quarterly</option>
+                <option value="Annual">Annual</option>
+                <option value="Custom">Custom Date Range</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row" id="customDateRange" style="display: none;">
+            <div class="col-md-6 mb-3">
+              <label for="periodStart" class="form-label">Start Date</label>
+              <input type="date" class="form-control" id="periodStart" name="period_start">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="periodEnd" class="form-label">End Date</label>
+              <input type="date" class="form-control" id="periodEnd" name="period_end">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reportScope" class="form-label">Report Scope</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="allAccounts" name="scope" value="all_accounts" checked>
+              <label class="form-check-label" for="allAccounts">All Accounts</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="highRiskAccounts" name="scope" value="high_risk">
+              <label class="form-check-label" for="highRiskAccounts">High Risk Accounts Only</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="specificDepartment" name="scope" value="department">
+              <label class="form-check-label" for="specificDepartment">Specific Department</label>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="reportFormat" class="form-label">Output Format</label>
+            <select class="form-select" id="reportFormat" name="format">
+              <option value="PDF">PDF Report</option>
+              <option value="Excel">Excel Spreadsheet</option>
+              <option value="CSV">CSV File</option>
+              <option value="Dashboard">Interactive Dashboard</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label for="additionalParameters" class="form-label">Additional Parameters</label>
+            <textarea class="form-control" id="additionalParameters" name="parameters" rows="3" placeholder="Enter any specific parameters or filters for the report..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Generate Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Portfolio Risk Analysis Modal -->
+<div class="modal fade" id="portfolioAnalysisModal" tabindex="-1" aria-labelledby="portfolioAnalysisModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="portfolioAnalysisModalLabel">
+          <i class="fas fa-chart-pie text-info"></i> Portfolio Risk Analysis
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form id="portfolioAnalysisForm">
+        <div class="modal-body">
+          <div id="portfolioAnalysisAlert"></div>
+          
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="portfolioId" class="form-label">Portfolio ID</label>
+              <input type="text" class="form-control" id="portfolioId" name="portfolio_id" required placeholder="PORT-001">
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="analysisType" class="form-label">Analysis Type</label>
+              <select class="form-select" id="analysisType" name="analysis_type">
+                <option value="comprehensive">Comprehensive Analysis</option>
+                <option value="var">Value at Risk (VaR)</option>
+                <option value="stress_test">Stress Testing</option>
+                <option value="concentration">Concentration Risk</option>
+                <option value="correlation">Correlation Analysis</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="confidenceLevel" class="form-label">Confidence Level (%)</label>
+              <select class="form-select" id="confidenceLevel" name="confidence_level">
+                <option value="95">95%</option>
+                <option value="99">99%</option>
+                <option value="99.9">99.9%</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="timeHorizon" class="form-label">Time Horizon (Days)</label>
+              <select class="form-select" id="timeHorizon" name="time_horizon">
+                <option value="1">1 Day</option>
+                <option value="10">10 Days</option>
+                <option value="21">21 Days</option>
+                <option value="252">1 Year</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Stress Test Scenarios</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="marketCrash" name="scenarios" value="market_crash" checked>
+              <label class="form-check-label" for="marketCrash">Market Crash (-20%)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="interestShock" name="scenarios" value="interest_shock" checked>
+              <label class="form-check-label" for="interestShock">Interest Rate Shock (+200 bps)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="creditCrisis" name="scenarios" value="credit_crisis">
+              <label class="form-check-label" for="creditCrisis">Credit Crisis</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="currencyShock" name="scenarios" value="currency_shock">
+              <label class="form-check-label" for="currencyShock">Currency Shock</label>
+            </div>
+          </div>
+
+          <!-- Analysis Results (populated after submission) -->
+          <div id="analysisResults" class="mt-4" style="display: none;">
+            <h6 class="text-primary">Analysis Results:</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>1-Day VaR:</strong> $<span id="resultVar1Day"></span></p>
+                <p><strong>10-Day VaR:</strong> $<span id="resultVar10Day"></span></p>
+                <p><strong>Expected Shortfall:</strong> $<span id="resultES"></span></p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Beta:</strong> <span id="resultBeta"></span></p>
+                <p><strong>Sharpe Ratio:</strong> <span id="resultSharpe"></span></p>
+                <p><strong>Max Drawdown:</strong> <span id="resultDrawdown"></span>%</p>
+              </div>
+            </div>
+            <div class="mt-3">
+              <h6 class="text-info">Concentration Risk:</h6>
+              <div class="row">
+                <div class="col-md-4">
+                  <p><strong>Sector:</strong> <span id="resultSectorConc"></span>%</p>
+                </div>
+                <div class="col-md-4">
+                  <p><strong>Geographic:</strong> <span id="resultGeoConc"></span>%</p>
+                </div>
+                <div class="col-md-4">
+                  <p><strong>Single Issuer Max:</strong> <span id="resultIssuerMax"></span>%</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info">Run Analysis</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Placeholder modals for other functions -->
+{% for modal in [
+  'creditLimitModal', 'collateralModal', 'policyReviewModal', 'premiumCalculatorModal',
+  'suspiciousActivityModal', 'fraudInvestigationModal', 'regulatoryFilingModal', 'amlMonitoringModal',
+  'stressTestModal', 'varCalculationModal', 'marketRiskModal', 'interestRateRiskModal', 'currencyRiskModal'
+] %}
+<div class="modal fade" id="{{ modal }}" tabindex="-1" aria-labelledby="{{ modal }}Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="{{ modal }}Label">{{ modal|replace('Modal','')|replace('_',' ')|title }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ modal|replace('Modal','')|replace('_',' ')|title }} functionality will be implemented here.</p>
+        <p>This feature is part of the comprehensive risk management system.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
+
+<script>
+function openModal(modalId) {
+  var modal = document.getElementById(modalId);
+  if (modal) {
+    var bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  }
+}
+
+// Helper function for AJAX form submission
+function handleForm(formId, alertId, endpoint, transformData) {
+  const form = document.getElementById(formId);
+  if (form) {
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const alertBox = document.getElementById(alertId);
+      alertBox.innerHTML = '';
+      
+      let data = {};
+      new FormData(form).forEach((v, k) => data[k] = v);
+      if (transformData) data = transformData(data);
+      
+      try {
+        const resp = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await resp.json();
+        
+        if (result.success) {
+          alertBox.innerHTML = `<div class="alert alert-success">${result.message}</div>`;
+          
+          // Handle specific form results
+          if (formId === 'creditRiskForm' && result.assessment) {
+            displayRiskAssessment(result.assessment);
+          } else if (formId === 'portfolioAnalysisForm' && result.analysis) {
+            displayPortfolioAnalysis(result.analysis);
+          }
+          
+          // Reset form after delay for most forms
+          if (formId !== 'creditRiskForm' && formId !== 'portfolioAnalysisForm') {
+            setTimeout(() => {
+              form.reset();
+              var modal = bootstrap.Modal.getInstance(document.getElementById(formId.replace('Form','Modal')));
+              if (modal) modal.hide();
+            }, 2000);
+          }
+        } else {
+          alertBox.innerHTML = `<div class="alert alert-danger">${result.error || result.message || 'Operation failed.'}</div>`;
+        }
+      } catch (err) {
+        alertBox.innerHTML = '<div class="alert alert-danger">Error processing request.</div>';
+      }
+    });
+  }
+}
+
+// Display risk assessment results
+function displayRiskAssessment(assessment) {
+  document.getElementById('resultCreditScore').textContent = assessment.credit_score;
+  document.getElementById('resultRiskLevel').textContent = assessment.risk_level;
+  document.getElementById('resultDebtRatio').textContent = (assessment.debt_to_income_ratio * 100).toFixed(1) + '%';
+  document.getElementById('resultPaymentScore').textContent = assessment.payment_history_score;
+  document.getElementById('resultAccountAge').textContent = assessment.account_age_months;
+  
+  const recommendationsList = document.getElementById('resultRecommendations');
+  recommendationsList.innerHTML = '';
+  assessment.recommendations.forEach(rec => {
+    const li = document.createElement('li');
+    li.textContent = rec;
+    recommendationsList.appendChild(li);
+  });
+  
+  document.getElementById('riskResults').style.display = 'block';
+}
+
+// Display portfolio analysis results
+function displayPortfolioAnalysis(analysis) {
+  document.getElementById('resultVar1Day').textContent = analysis.var_1_day.toLocaleString();
+  document.getElementById('resultVar10Day').textContent = analysis.var_10_day.toLocaleString();
+  document.getElementById('resultES').textContent = analysis.expected_shortfall.toLocaleString();
+  document.getElementById('resultBeta').textContent = analysis.beta;
+  document.getElementById('resultSharpe').textContent = analysis.sharpe_ratio;
+  document.getElementById('resultDrawdown').textContent = (analysis.max_drawdown * 100).toFixed(1);
+  document.getElementById('resultSectorConc').textContent = analysis.concentration_risk.sector_concentration;
+  document.getElementById('resultGeoConc').textContent = analysis.concentration_risk.geographic_concentration;
+  document.getElementById('resultIssuerMax').textContent = analysis.concentration_risk.single_issuer_max;
+  
+  document.getElementById('analysisResults').style.display = 'block';
+}
+
+// Premium calculator function
+function calculatePremium() {
+  const policyType = document.getElementById('policyType').value;
+  const coverageAmount = parseFloat(document.getElementById('coverageAmount').value) || 0;
+  const customerAge = parseInt(document.getElementById('customerAge').value) || 30;
+  const riskProfile = document.getElementById('riskProfile').value;
+  
+  if (!policyType || !coverageAmount) {
+    alert('Please select policy type and enter coverage amount');
+    return;
+  }
+  
+  // Basic premium calculation logic
+  let baseRate = 0.02; // 2% base rate
+  
+  // Adjust for policy type
+  const typeMultipliers = {
+    'Life Insurance': 0.5,
+    'Health Insurance': 1.2,
+    'Auto Insurance': 0.8,
+    'Home Insurance': 0.6,
+    'Business Insurance': 1.5,
+    'Travel Insurance': 0.3,
+    'Disability Insurance': 1.0
+  };
+  
+  // Adjust for age
+  let ageMultiplier = 1.0;
+  if (customerAge > 60) ageMultiplier = 2.0;
+  else if (customerAge > 40) ageMultiplier = 1.5;
+  else if (customerAge < 25) ageMultiplier = 0.8;
+  
+  // Adjust for risk profile
+  const riskMultipliers = {
+    'Low': 0.8,
+    'Medium': 1.0,
+    'High': 1.5
+  };
+  
+  const calculatedPremium = coverageAmount * baseRate * 
+    (typeMultipliers[policyType] || 1.0) * 
+    ageMultiplier * 
+    (riskMultipliers[riskProfile] || 1.0);
+  
+  document.getElementById('premiumAmount').value = calculatedPremium.toFixed(2);
+  
+  alert(`Calculated Premium: $${calculatedPremium.toFixed(2)} annually`);
+}
+
+// Investigation functions
+function investigateAlert(alertId) {
+  alert(`Opening investigation for alert ${alertId}. This would redirect to detailed investigation interface.`);
+}
+
+function viewPolicy(policyId) {
+  alert(`Viewing policy details for ${policyId}. This would open a detailed policy view.`);
+}
+
+function editPolicy(policyId) {
+  alert(`Editing policy ${policyId}. This would open the policy edit interface.`);
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  // Setup form handlers
+  handleForm('creditRiskForm', 'creditRiskAlert', '/api/risk/assessment');
+  handleForm('newPolicyForm', 'newPolicyAlert', '/api/risk/insurance/policy');
+  handleForm('claimProcessForm', 'claimProcessAlert', '/api/risk/insurance/claim');
+  handleForm('fraudAlertForm', 'fraudAlertAlert', '/api/risk/fraud/alert');
+  handleForm('complianceReportForm', 'complianceReportAlert', '/api/risk/compliance/report');
+  handleForm('portfolioAnalysisForm', 'portfolioAnalysisAlert', '/api/risk/portfolio/analysis');
+  
+  // Custom date range toggle
+  const reportPeriod = document.getElementById('reportPeriod');
+  const customDateRange = document.getElementById('customDateRange');
+  
+  if (reportPeriod && customDateRange) {
+    reportPeriod.addEventListener('change', function() {
+      if (this.value === 'Custom') {
+        customDateRange.style.display = 'flex';
+        document.getElementById('periodStart').required = true;
+        document.getElementById('periodEnd').required = true;
+      } else {
+        customDateRange.style.display = 'none';
+        document.getElementById('periodStart').required = false;
+        document.getElementById('periodEnd').required = false;
+      }
+    });
+  }
+  
+  // Real-time risk monitoring (update every 30 seconds)
+  setInterval(function() {
+    fetch('/api/risk/monitoring/dashboard')
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Update dashboard metrics with real-time data
+          console.log('Risk metrics updated:', data.data);
+        }
+      })
+      .catch(error => console.error('Error fetching risk data:', error));
+  }, 30000);
+});
+</script>
+
+{% endblock %} 

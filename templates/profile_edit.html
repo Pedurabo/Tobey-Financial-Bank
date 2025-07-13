@@ -1,0 +1,409 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - Tobey Finance Bank{% endblock %}
+
+{% block page_title %}Edit Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <!-- Back to Profile -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Profile
+      </a>
+    </div>
+  </div>
+
+  <!-- Edit Profile Form -->
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="fas fa-edit me-2"></i>Edit Profile Information
+          </h5>
+        </div>
+        <div class="card-body">
+          <div id="profileAlert"></div>
+          
+          <form id="profileEditForm">
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="firstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="firstName" name="first_name" 
+                       value="{{ profile.first_name }}" required>
+                <div class="invalid-feedback">
+                  Please provide a valid first name.
+                </div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="lastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" id="lastName" name="last_name" 
+                       value="{{ profile.last_name }}" required>
+                <div class="invalid-feedback">
+                  Please provide a valid last name.
+                </div>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" id="email" name="email" 
+                     value="{{ profile.email }}" required>
+              <div class="invalid-feedback">
+                Please provide a valid email address.
+              </div>
+              <div class="form-text">
+                This email will be used for notifications and account recovery.
+              </div>
+            </div>
+            
+            <!-- Read-only fields -->
+            <hr class="my-4">
+            <h6 class="text-muted mb-3">Account Information (Read Only)</h6>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control bg-light" id="username" 
+                       value="{{ profile.username }}" readonly>
+                <div class="form-text">Username cannot be changed.</div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="employeeId" class="form-label">Employee ID</label>
+                <input type="text" class="form-control bg-light" id="employeeId" 
+                       value="{{ profile.employee_id }}" readonly>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control bg-light" id="department" 
+                       value="{{ profile.department }}" readonly>
+                <div class="form-text">Contact HR to change department.</div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control bg-light" id="role" 
+                       value="{{ profile.role|title }}" readonly>
+                <div class="form-text">Contact HR to change role.</div>
+              </div>
+            </div>
+            
+            <!-- Additional Settings -->
+            <hr class="my-4">
+            <h6 class="text-muted mb-3">Additional Settings</h6>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="preferredName" class="form-label">Preferred Display Name</label>
+                <input type="text" class="form-control" id="preferredName" name="preferred_name" 
+                       placeholder="How you'd like to be addressed">
+                <div class="form-text">Optional: How you'd like your name to appear in the system.</div>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="phoneNumber" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNumber" name="phone_number" 
+                       placeholder="+1 (555) 123-4567">
+                <div class="form-text">For account security and notifications.</div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label for="emergencyContact" class="form-label">Emergency Contact</label>
+                <input type="text" class="form-control" id="emergencyContact" name="emergency_contact" 
+                       placeholder="Name and phone number">
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <label for="timeZone" class="form-label">Time Zone</label>
+                <select class="form-select" id="timeZone" name="time_zone">
+                  <option value="UTC">UTC</option>
+                  <option value="EST">Eastern Time (EST)</option>
+                  <option value="CST">Central Time (CST)</option>
+                  <option value="MST">Mountain Time (MST)</option>
+                  <option value="PST">Pacific Time (PST)</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Privacy Settings -->
+            <hr class="my-4">
+            <h6 class="text-muted mb-3">Privacy & Communication</h6>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="emailNotifications" 
+                         name="email_notifications" checked>
+                  <label class="form-check-label" for="emailNotifications">
+                    Email Notifications
+                  </label>
+                  <div class="form-text">Receive important account notifications via email.</div>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="securityAlerts" 
+                         name="security_alerts" checked>
+                  <label class="form-check-label" for="securityAlerts">
+                    Security Alerts
+                  </label>
+                  <div class="form-text">Get notified of login attempts and security changes.</div>
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="marketingEmails" 
+                         name="marketing_emails">
+                  <label class="form-check-label" for="marketingEmails">
+                    Marketing Communications
+                  </label>
+                  <div class="form-text">Receive updates about new features and services.</div>
+                </div>
+                
+                <div class="form-check form-switch mb-3">
+                  <input class="form-check-input" type="checkbox" id="profileVisibility" 
+                         name="profile_visibility" checked>
+                  <label class="form-check-label" for="profileVisibility">
+                    Profile Visibility
+                  </label>
+                  <div class="form-text">Allow other employees to see your basic profile.</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+              <div>
+                <button type="button" class="btn btn-outline-danger" onclick="resetForm()">
+                  <i class="fas fa-undo me-2"></i>Reset Changes
+                </button>
+              </div>
+              <div>
+                <a href="{{ url_for('profile') }}" class="btn btn-secondary me-2">
+                  <i class="fas fa-times me-2"></i>Cancel
+                </a>
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-2"></i>Save Changes
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Profile Picture Section (Future Enhancement) -->
+  <div class="row justify-content-center mt-4">
+    <div class="col-lg-8">
+      <div class="card shadow">
+        <div class="card-header bg-info text-white">
+          <h6 class="mb-0">
+            <i class="fas fa-camera me-2"></i>Profile Picture
+          </h6>
+        </div>
+        <div class="card-body text-center">
+          <div class="mb-3">
+            <div class="bg-light rounded-circle d-inline-flex align-items-center justify-content-center" 
+                 style="width: 120px; height: 120px;">
+              <i class="fas fa-user fa-3x text-muted"></i>
+            </div>
+          </div>
+          <p class="text-muted">Profile picture upload will be available in a future update.</p>
+          <button type="button" class="btn btn-outline-secondary" disabled>
+            <i class="fas fa-upload me-2"></i>Upload Photo
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('profileEditForm');
+  const alertBox = document.getElementById('profileAlert');
+  
+  // Form submission
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Clear previous alerts
+    alertBox.innerHTML = '';
+    
+    // Validate form
+    if (!form.checkValidity()) {
+      e.stopPropagation();
+      form.classList.add('was-validated');
+      return;
+    }
+    
+    // Prepare form data
+    const formData = new FormData(form);
+    const data = {};
+    
+    // Convert FormData to object
+    for (let [key, value] of formData.entries()) {
+      if (form.querySelector(`[name="${key}"]`).type === 'checkbox') {
+        data[key] = form.querySelector(`[name="${key}"]`).checked;
+      } else {
+        data[key] = value;
+      }
+    }
+    
+    // Handle unchecked checkboxes
+    const checkboxes = form.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+      if (!formData.has(checkbox.name)) {
+        data[checkbox.name] = false;
+      }
+    });
+    
+    try {
+      const response = await fetch('/api/profile/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        alertBox.innerHTML = `
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>${result.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+        
+        // Update form values with returned data
+        if (result.profile) {
+          if (result.profile.first_name) {
+            document.getElementById('firstName').value = result.profile.first_name;
+          }
+          if (result.profile.last_name) {
+            document.getElementById('lastName').value = result.profile.last_name;
+          }
+          if (result.profile.email) {
+            document.getElementById('email').value = result.profile.email;
+          }
+        }
+        
+        // Scroll to top to show success message
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Optionally redirect after delay
+        setTimeout(() => {
+          if (confirm('Profile updated successfully! Would you like to return to your profile?')) {
+            window.location.href = '{{ url_for("profile") }}';
+          }
+        }, 2000);
+        
+      } else {
+        alertBox.innerHTML = `
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>${result.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    } catch (error) {
+      alertBox.innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="fas fa-exclamation-triangle me-2"></i>Error updating profile. Please try again.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    form.classList.add('was-validated');
+  });
+  
+  // Real-time validation
+  const requiredInputs = form.querySelectorAll('input[required]');
+  requiredInputs.forEach(input => {
+    input.addEventListener('blur', function() {
+      validateField(this);
+    });
+    
+    input.addEventListener('input', function() {
+      if (this.classList.contains('is-invalid')) {
+        validateField(this);
+      }
+    });
+  });
+  
+  function validateField(field) {
+    if (field.checkValidity()) {
+      field.classList.remove('is-invalid');
+      field.classList.add('is-valid');
+    } else {
+      field.classList.remove('is-valid');
+      field.classList.add('is-invalid');
+    }
+  }
+});
+
+// Reset form to original values
+function resetForm() {
+  if (confirm('Are you sure you want to reset all changes? This will restore the original values.')) {
+    document.getElementById('profileEditForm').reset();
+    
+    // Reset validation classes
+    const form = document.getElementById('profileEditForm');
+    form.classList.remove('was-validated');
+    
+    const inputs = form.querySelectorAll('.form-control');
+    inputs.forEach(input => {
+      input.classList.remove('is-valid', 'is-invalid');
+    });
+    
+    // Reset original values
+    document.getElementById('firstName').value = '{{ profile.first_name }}';
+    document.getElementById('lastName').value = '{{ profile.last_name }}';
+    document.getElementById('email').value = '{{ profile.email }}';
+    document.getElementById('username').value = '{{ profile.username }}';
+    document.getElementById('employeeId').value = '{{ profile.employee_id }}';
+    document.getElementById('department').value = '{{ profile.department }}';
+    document.getElementById('role').value = '{{ profile.role|title }}';
+  }
+}
+
+// Phone number formatting
+document.getElementById('phoneNumber').addEventListener('input', function(e) {
+  let value = e.target.value.replace(/\D/g, '');
+  if (value.length >= 6) {
+    value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+  } else if (value.length >= 3) {
+    value = value.replace(/(\d{3})(\d{0,3})/, '($1) $2');
+  }
+  e.target.value = value;
+});
+
+// Email validation
+document.getElementById('email').addEventListener('blur', function() {
+  const email = this.value;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
+  if (email && !emailRegex.test(email)) {
+    this.setCustomValidity('Please enter a valid email address');
+  } else {
+    this.setCustomValidity('');
+  }
+});
+</script>
+
+{% endblock %} 

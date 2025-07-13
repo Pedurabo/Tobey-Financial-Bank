@@ -1,0 +1,631 @@
+<!-- Customer Dashboard Modals -->
+<!-- Transfer Modal -->
+<div class="modal fade" id="transferModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-exchange-alt text-primary"></i> Transfer Money</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="transferForm">
+          <div class="mb-3">
+            <label class="form-label">From Account</label>
+            <select class="form-select" name="from_account" required>
+              <option value="">Select account</option>
+              {% for acc in accounts %}
+              <option value="{{ acc.number }}">{{ acc.type }} - ${{ "{:,.2f}".format(acc.balance) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Recipient Account Number</label>
+            <input type="text" class="form-control" name="recipient_account" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Recipient Name</label>
+            <input type="text" class="form-control" name="recipient_name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <textarea class="form-control" name="description" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="processTransfer()">Transfer Money</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deposit Modal -->
+<div class="modal fade" id="depositModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-plus-circle text-success"></i> Make Deposit</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="depositForm">
+          <div class="mb-3">
+            <label class="form-label">To Account</label>
+            <select class="form-select" name="to_account" required>
+              <option value="">Select account</option>
+              {% for acc in accounts %}
+              <option value="{{ acc.number }}">{{ acc.type }} - ${{ "{:,.2f}".format(acc.balance) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Source</label>
+            <select class="form-select" name="source" required>
+              <option value="">Select source</option>
+              <option value="cash">Cash</option>
+              <option value="check">Check</option>
+              <option value="transfer">Bank Transfer</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <textarea class="form-control" name="description" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-success" onclick="processDeposit()">Make Deposit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div class="modal fade" id="withdrawModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-minus-circle text-warning"></i> Make Withdrawal</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="withdrawForm">
+          <div class="mb-3">
+            <label class="form-label">From Account</label>
+            <select class="form-select" name="from_account" required>
+              <option value="">Select account</option>
+              {% for acc in accounts %}
+              <option value="{{ acc.number }}">{{ acc.type }} - ${{ "{:,.2f}".format(acc.balance) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Method</label>
+            <select class="form-select" name="method" required>
+              <option value="">Select method</option>
+              <option value="atm">ATM</option>
+              <option value="teller">Teller</option>
+              <option value="transfer">Transfer</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description (Optional)</label>
+            <textarea class="form-control" name="description" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-warning" onclick="processWithdrawal()">Make Withdrawal</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loan Application Modal -->
+<div class="modal fade" id="loanModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-hand-holding-usd text-info"></i> Apply for Loan</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="loanForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Loan Type</label>
+                <select class="form-select" name="loan_type" required>
+                  <option value="">Select loan type</option>
+                  <option value="personal">Personal Loan</option>
+                  <option value="home">Home Loan</option>
+                  <option value="car">Car Loan</option>
+                  <option value="business">Business Loan</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Amount</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" name="amount" min="1000" step="100" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Term (months)</label>
+                <input type="number" class="form-control" name="term" min="12" max="360" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Monthly Income</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" name="monthly_income" min="1000" step="100" required>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Purpose</label>
+            <input type="text" class="form-control" name="purpose" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Additional Information</label>
+            <textarea class="form-control" name="additional_info" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-info" onclick="processLoanApplication()">Submit Application</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pay Bill Modal -->
+<div class="modal fade" id="payBillModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-file-invoice-dollar text-secondary"></i> Pay Bill</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="payBillForm">
+          <div class="mb-3">
+            <label class="form-label">From Account</label>
+            <select class="form-select" name="from_account" required>
+              <option value="">Select account</option>
+              {% for acc in accounts %}
+              <option value="{{ acc.number }}">{{ acc.type }} - ${{ "{:,.2f}".format(acc.balance) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pay To</label>
+            <select class="form-select" name="payee" required>
+              <option value="">Select payee</option>
+              {% for payee in payees %}
+              <option value="{{ payee.name }}">{{ payee.name }} ({{ payee.bank }})</option>
+              {% endfor %}
+              <option value="new">+ Add New Payee</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="amount" min="1" step="0.01" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <input type="text" class="form-control" name="description" required>
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="recurring">
+              <label class="form-check-label">Set up recurring payment</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" onclick="processBillPayment()">Pay Bill</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Card Modal -->
+<div class="modal fade" id="addCardModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-credit-card text-primary"></i> Add New Card</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addCardForm">
+          <div class="mb-3">
+            <label class="form-label">Card Type</label>
+            <select class="form-select" name="card_type" required>
+              <option value="">Select card type</option>
+              <option value="visa">Visa</option>
+              <option value="mastercard">Mastercard</option>
+              <option value="amex">American Express</option>
+              <option value="discover">Discover</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Account Type</label>
+            <select class="form-select" name="account_type" required>
+              <option value="">Select account type</option>
+              <option value="checking">Checking</option>
+              <option value="savings">Savings</option>
+              <option value="credit">Credit</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Credit Limit</label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input type="number" class="form-control" name="limit" min="1000" step="100" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="virtual">
+              <label class="form-check-label">Virtual card (for online purchases)</label>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="addNewCard()">Add Card</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Support Modal -->
+<div class="modal fade" id="supportModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-headset text-warning"></i> Create Support Ticket</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="supportForm">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Category</label>
+                <select class="form-select" name="category" required>
+                  <option value="">Select category</option>
+                  <option value="account">Account Issues</option>
+                  <option value="card">Card Issues</option>
+                  <option value="loan">Loan Questions</option>
+                  <option value="technical">Technical Support</option>
+                  <option value="billing">Billing Questions</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Priority</label>
+                <select class="form-select" name="priority" required>
+                  <option value="">Select priority</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <input type="text" class="form-control" name="subject" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="4" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Contact Preference</label>
+            <select class="form-select" name="contact_preference">
+              <option value="email">Email</option>
+              <option value="phone">Phone</option>
+              <option value="chat">Live Chat</option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-warning" onclick="submitSupportTicket()">Submit Ticket</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- All Transactions Modal -->
+<div class="modal fade" id="allTransactionsModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-list-alt text-primary"></i> All Transactions</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-3 mb-2">
+            <input type="text" id="transactionSearch" class="form-control" placeholder="Search transactions...">
+          </div>
+          <div class="col-md-2 mb-2">
+            <select id="transactionTypeFilter" class="form-select">
+              <option value="">All Types</option>
+              <option value="Deposit">Deposit</option>
+              <option value="Withdrawal">Withdrawal</option>
+              <option value="Transfer">Transfer</option>
+              <option value="Payment">Payment</option>
+            </select>
+          </div>
+          <div class="col-md-4 mb-2 d-flex gap-2 align-items-center">
+            <label class="form-label mb-0">From</label>
+            <input type="date" id="fromDate" class="form-control" style="max-width: 140px;">
+            <label class="form-label mb-0">To</label>
+            <input type="date" id="toDate" class="form-control" style="max-width: 140px;">
+          </div>
+          <div class="col-md-3 text-end">
+            <button class="btn btn-outline-secondary me-2" onclick="exportTransactions('csv')"><i class="fas fa-file-csv"></i> CSV</button>
+            <button class="btn btn-outline-secondary me-2" onclick="exportTransactions('excel')"><i class="fas fa-file-excel"></i> Excel</button>
+            <button class="btn btn-outline-secondary" onclick="exportTransactions('pdf')"><i class="fas fa-file-pdf"></i> PDF</button>
+          </div>
+        </div>
+        <div class="table-responsive" style="max-height: 400px;">
+          <table class="table table-striped table-hover" id="allTransactionsTable">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th onclick="sortTable(0)">Date <i class="fas fa-sort"></i></th>
+                <th>Account</th>
+                <th>Description</th>
+                <th onclick="sortTable(3)">Type <i class="fas fa-sort"></i></th>
+                <th onclick="sortTable(4)">Amount <i class="fas fa-sort"></i></th>
+                <th onclick="sortTable(5)">Balance <i class="fas fa-sort"></i></th>
+              </tr>
+            </thead>
+            <tbody id="transactionsTbody">
+              {% for txn in all_transactions %}
+              <tr>
+                <td>{{ txn.date }}</td>
+                <td>{{ txn.account }}</td>
+                <td>{{ txn.description }}</td>
+                <td>
+                  <span class="badge bg-{% if txn.type == 'Deposit' %}success{% elif txn.type == 'Withdrawal' %}danger{% elif txn.type == 'Transfer' %}info{% else %}secondary{% endif %}">
+                    {{ txn.type }}
+                  </span>
+                </td>
+                <td class="text-{% if txn.amount > 0 %}success{% else %}danger{% endif %}">${{ "{:,.2f}".format(txn.amount) }}</td>
+                <td>${{ "{:,.2f}".format(txn.balance) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Modal functions
+function processTransfer() {
+  const form = document.getElementById('transferForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/transfer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Transfer successful: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('transferModal')).hide();
+      form.reset();
+    } else {
+      alert('Transfer failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function processDeposit() {
+  const form = document.getElementById('depositForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/deposit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Deposit successful: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+      form.reset();
+    } else {
+      alert('Deposit failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function processWithdrawal() {
+  const form = document.getElementById('withdrawForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/withdraw', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Withdrawal successful: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('withdrawModal')).hide();
+      form.reset();
+    } else {
+      alert('Withdrawal failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function processLoanApplication() {
+  const form = document.getElementById('loanForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/loan/apply', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Loan application submitted: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('loanModal')).hide();
+      form.reset();
+    } else {
+      alert('Loan application failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function processBillPayment() {
+  const form = document.getElementById('payBillForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/transfer', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Bill payment successful: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('payBillModal')).hide();
+      form.reset();
+    } else {
+      alert('Bill payment failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function addNewCard() {
+  const form = document.getElementById('addCardForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/card/add', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Card added: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('addCardModal')).hide();
+      form.reset();
+    } else {
+      alert('Card addition failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function submitSupportTicket() {
+  const form = document.getElementById('supportForm');
+  const formData = new FormData(form);
+  const data = Object.fromEntries(formData);
+  
+  fetch('/api/customer/support/ticket', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (result.success) {
+      alert('Support ticket submitted: ' + result.message);
+      bootstrap.Modal.getInstance(document.getElementById('supportModal')).hide();
+      form.reset();
+    } else {
+      alert('Support ticket failed: ' + result.error);
+    }
+  })
+  .catch(error => alert('Error: ' + error.message));
+}
+
+function exportTransactions(format) {
+  alert(format.toUpperCase() + ' export coming soon!');
+}
+
+function sortTable(colIdx) {
+  // Simple sorting implementation
+  console.log('Sorting column:', colIdx);
+}
+</script> 

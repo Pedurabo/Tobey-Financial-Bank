@@ -1,0 +1,1589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasury Department Dashboard - Banking Management System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --info-color: #17a2b8;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-warning: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --gradient-danger: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: var(--gradient-primary) !important;
+            box-shadow: var(--shadow);
+            border-bottom: 3px solid var(--secondary-color);
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: white !important;
+            font-size: 1.4rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.9) !important;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: white !important;
+            transform: translateY(-2px);
+        }
+
+        .dashboard-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dashboard-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .dashboard-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: none;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stats-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-primary);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stats-card h3 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stats-card p {
+            color: #6c757d;
+            margin-bottom: 0;
+            font-weight: 500;
+        }
+
+        .stats-card .icon {
+            font-size: 3rem;
+            color: var(--secondary-color);
+            opacity: 0.8;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            border: none;
+            height: 100%;
+        }
+
+        .action-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .action-card h5 {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+
+        .btn-success {
+            background: var(--gradient-success);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
+        }
+
+        .btn-warning {
+            background: var(--gradient-warning);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--gradient-danger);
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            height: 400px;
+        }
+
+        .chart-title {
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+
+        .modal-title {
+            font-weight: 600;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            font-weight: 500;
+        }
+
+        .table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .table thead th {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            font-weight: 600;
+            padding: 1rem;
+        }
+
+        .table tbody td {
+            padding: 1rem;
+            border-color: #f8f9fa;
+        }
+
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            border-radius: 10px;
+        }
+
+        .nav-tabs {
+            border: none;
+            margin-bottom: 2rem;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            border-radius: 10px 10px 0 0;
+            color: var(--primary-color);
+            font-weight: 600;
+            padding: 1rem 2rem;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .nav-tabs .nav-link:hover {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .risk-low { background-color: var(--success-color); }
+        .risk-medium { background-color: var(--warning-color); }
+        .risk-high { background-color: var(--danger-color); }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-title {
+                font-size: 2rem;
+            }
+            
+            .stats-card h3 {
+                font-size: 2rem;
+            }
+            
+            .btn-primary, .btn-success, .btn-warning, .btn-danger {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Real-time indicators */
+        .real-time-indicator {
+            position: relative;
+            display: inline-block;
+        }
+
+        .real-time-indicator::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -10px;
+            width: 8px;
+            height: 8px;
+            background: #28a745;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('dashboard') }}">
+                <i class="fas fa-university me-2"></i>Treasury Department
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('dashboard') }}">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('profile') }}">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="dashboard-title">
+                        <i class="fas fa-chart-line me-3"></i>Treasury Management Dashboard
+                    </h1>
+                    <p class="dashboard-subtitle">
+                        Comprehensive treasury operations, risk management, and profit optimization
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="real-time-indicator">
+                        <span class="badge bg-success fs-6">
+                            <i class="fas fa-circle me-1"></i>Real-time Data
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Key Performance Indicators -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3>${{ "%.1f"|format(treasury_stats.total_assets.total_assets / 1000000000) }}B</h3>
+                            <p>Total Assets</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-coins icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3>{{ "%.2f"|format(treasury_stats.net_interest_margin.net_interest_margin) }}%</h3>
+                            <p>Net Interest Margin</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-percentage icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3>${{ "%.0f"|format(treasury_stats.liquidity_position.total_liquidity / 1000000) }}M</h3>
+                            <p>Total Liquidity</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-water icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stats-card">
+                    <div class="row align-items-center">
+                        <div class="col-8">
+                            <h3>${{ "%.1f"|format(treasury_stats.profit_optimization.optimization_opportunities.total_opportunity / 1000000) }}M</h3>
+                            <p>Profit Opportunity</p>
+                        </div>
+                        <div class="col-4 text-end">
+                            <i class="fas fa-chart-line icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Treasury Operations Tabs -->
+        <ul class="nav nav-tabs" id="treasuryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Overview
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="bonds-tab" data-bs-toggle="tab" data-bs-target="#bonds" type="button" role="tab">
+                    <i class="fas fa-certificate me-2"></i>Treasury Bonds
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="cashflow-tab" data-bs-toggle="tab" data-bs-target="#cashflow" type="button" role="tab">
+                    <i class="fas fa-money-bill-wave me-2"></i>Cash Flow
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="alm-tab" data-bs-toggle="tab" data-bs-target="#alm" type="button" role="tab">
+                    <i class="fas fa-balance-scale me-2"></i>ALM
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="risk-tab" data-bs-toggle="tab" data-bs-target="#risk" type="button" role="tab">
+                    <i class="fas fa-shield-alt me-2"></i>Risk Management
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analytics-tab" data-bs-toggle="tab" data-bs-target="#analytics" type="button" role="tab">
+                    <i class="fas fa-chart-bar me-2"></i>Analytics
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="treasuryTabsContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                <div class="row">
+                    <!-- Portfolio Overview -->
+                    <div class="col-md-6">
+                        <div class="action-card">
+                            <h5><i class="fas fa-briefcase me-2"></i>Investment Portfolio</h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.0f"|format(treasury_stats.investment_portfolio_value.total_portfolio_value / 1000000) }}M</div>
+                                        <div class="metric-label">Total Value</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.2f"|format(treasury_stats.investment_portfolio_value.average_yield) }}%</div>
+                                        <div class="metric-label">Average Yield</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="optimizePortfolio()">
+                                <i class="fas fa-cog me-2"></i>Optimize Portfolio
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Funding Sources -->
+                    <div class="col-md-6">
+                        <div class="action-card">
+                            <h5><i class="fas fa-piggy-bank me-2"></i>Funding Sources</h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(treasury_stats.funding_sources.deposits.percentage) }}%</div>
+                                        <div class="metric-label">Deposits</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.2f"|format(treasury_stats.funding_sources.weighted_average_cost) }}%</div>
+                                        <div class="metric-label">Avg Cost</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-success" onclick="optimizeFunding()">
+                                <i class="fas fa-optimize me-2"></i>Optimize Funding
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Market Data -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="action-card">
+                            <h5><i class="fas fa-globe me-2"></i>Real-time Market Data</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.2f"|format(treasury_stats.market_data.interest_rates.fed_funds_rate) }}%</div>
+                                        <div class="metric-label">Fed Funds Rate</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.2f"|format(treasury_stats.market_data.yield_curves.treasury_10y) }}%</div>
+                                        <div class="metric-label">10Y Treasury</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.4f"|format(treasury_stats.market_data.fx_rates.eur_usd) }}</div>
+                                        <div class="metric-label">EUR/USD</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(treasury_stats.market_data.volatility.interest_rate_vol) }}%</div>
+                                        <div class="metric-label">IR Volatility</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Treasury Bonds Tab -->
+            <div class="tab-pane fade" id="bonds" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="action-card">
+                            <h5><i class="fas fa-certificate me-2"></i>Treasury Bonds Portfolio</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Maturity</th>
+                                            <th>Value</th>
+                                            <th>Yield</th>
+                                            <th>Duration</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Short-term (&lt; 2Y)</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.treasury_bonds_portfolio.short_term / 1000000) }}M</td>
+                                            <td>{{ "%.2f"|format(treasury_stats.treasury_bonds_portfolio.average_yield) }}%</td>
+                                            <td>{{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.modified_duration) }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="tradeBonds('short_term')">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Medium-term (2-10Y)</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.treasury_bonds_portfolio.medium_term / 1000000) }}M</td>
+                                            <td>{{ "%.2f"|format(treasury_stats.treasury_bonds_portfolio.average_yield) }}%</td>
+                                            <td>{{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.modified_duration) }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="tradeBonds('medium_term')">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Long-term (&gt; 10Y)</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.treasury_bonds_portfolio.long_term / 1000000) }}M</td>
+                                            <td>{{ "%.2f"|format(treasury_stats.treasury_bonds_portfolio.average_yield) }}%</td>
+                                            <td>{{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.modified_duration) }}</td>
+                                            <td>
+                                                <button class="btn btn-sm btn-primary" onclick="tradeBonds('long_term')">
+                                                    <i class="fas fa-exchange-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <button class="btn btn-success w-100" onclick="showBondTradeModal()">
+                                        <i class="fas fa-plus me-2"></i>Execute Bond Trade
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button class="btn btn-warning w-100" onclick="analyzeBondPortfolio()">
+                                        <i class="fas fa-chart-line me-2"></i>Analyze Portfolio
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <h5><i class="fas fa-info-circle me-2"></i>Bond Metrics</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.unrealized_pnl / 1000000) }}M</div>
+                                <div class="metric-label">Unrealized P&L</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.income_ytd / 1000000) }}M</div>
+                                <div class="metric-label">Income YTD</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">{{ "%.1f"|format(treasury_stats.treasury_bonds_portfolio.hedging_ratio * 100) }}%</div>
+                                <div class="metric-label">Hedging Ratio</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.0f"|format(treasury_stats.treasury_bonds_portfolio.dv01) }}</div>
+                                <div class="metric-label">DV01</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cash Flow Tab -->
+            <div class="tab-pane fade" id="cashflow" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Cash Flow Forecast</h5>
+                            <canvas id="cashflowChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="action-card">
+                            <h5><i class="fas fa-calendar-alt me-2"></i>Forecast Periods</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.cash_flow_forecast.next_30_days.net_flow / 1000000) }}M</div>
+                                <div class="metric-label">30 Days Net Flow</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.cash_flow_forecast.next_90_days.net_flow / 1000000) }}M</div>
+                                <div class="metric-label">90 Days Net Flow</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.cash_flow_forecast.next_365_days.net_flow / 1000000) }}M</div>
+                                <div class="metric-label">365 Days Net Flow</div>
+                            </div>
+                            <button class="btn btn-primary w-100" onclick="optimizeCashFlow()">
+                                <i class="fas fa-cog me-2"></i>Optimize Cash Flow
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALM Tab -->
+            <div class="tab-pane fade" id="alm" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="action-card">
+                            <h5><i class="fas fa-balance-scale me-2"></i>Asset-Liability Management</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Maturity Bucket</th>
+                                            <th>Gap ($M)</th>
+                                            <th>Risk Level</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>0-3 months</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.alm_metrics.maturity_gap_analysis['0_3_months'] / 1000000) }}M</td>
+                                            <td><span class="risk-indicator risk-low"></span>Low</td>
+                                        </tr>
+                                        <tr>
+                                            <td>3-12 months</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.alm_metrics.maturity_gap_analysis['3_12_months'] / 1000000) }}M</td>
+                                            <td><span class="risk-indicator risk-medium"></span>Medium</td>
+                                        </tr>
+                                        <tr>
+                                            <td>1-5 years</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.alm_metrics.maturity_gap_analysis['1_5_years'] / 1000000) }}M</td>
+                                            <td><span class="risk-indicator risk-high"></span>High</td>
+                                        </tr>
+                                        <tr>
+                                            <td>5+ years</td>
+                                            <td>${{ "%.0f"|format(treasury_stats.alm_metrics.maturity_gap_analysis['5_plus_years'] / 1000000) }}M</td>
+                                            <td><span class="risk-indicator risk-medium"></span>Medium</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <button class="btn btn-warning w-100" onclick="optimizeALM()">
+                                <i class="fas fa-balance-scale me-2"></i>Optimize ALM
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="action-card">
+                            <h5><i class="fas fa-chart-line me-2"></i>Interest Rate Sensitivity</h5>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.alm_metrics.interest_rate_sensitivity.nii_100bp_up / 1000000) }}M</div>
+                                        <div class="metric-label">NII +100bp</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.alm_metrics.interest_rate_sensitivity.nii_100bp_down / 1000000) }}M</div>
+                                        <div class="metric-label">NII -100bp</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.alm_metrics.interest_rate_sensitivity.eve_100bp_up / 1000000) }}M</div>
+                                        <div class="metric-label">EVE +100bp</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.alm_metrics.interest_rate_sensitivity.eve_100bp_down / 1000000) }}M</div>
+                                        <div class="metric-label">EVE -100bp</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Management Tab -->
+            <div class="tab-pane fade" id="risk" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="action-card">
+                            <h5><i class="fas fa-exclamation-triangle me-2"></i>Market Risk</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.risk_metrics.market_risk.var_1_day / 1000000) }}M</div>
+                                <div class="metric-label">1-Day VaR</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.risk_metrics.market_risk.var_10_day / 1000000) }}M</div>
+                                <div class="metric-label">10-Day VaR</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="action-card">
+                            <h5><i class="fas fa-user-shield me-2"></i>Credit Risk</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.risk_metrics.credit_risk.exposure / 1000000) }}M</div>
+                                <div class="metric-label">Exposure</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.0f"|format(treasury_stats.risk_metrics.credit_risk.expected_loss / 1000) }}K</div>
+                                <div class="metric-label">Expected Loss</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="action-card">
+                            <h5><i class="fas fa-tint me-2"></i>Liquidity Risk</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.0f"|format(treasury_stats.risk_metrics.liquidity_risk.liquidity_buffer / 1000000) }}M</div>
+                                <div class="metric-label">Buffer</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">{{ treasury_stats.risk_metrics.liquidity_risk.stress_survival }}</div>
+                                <div class="metric-label">Stress Days</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="action-card">
+                            <h5><i class="fas fa-cogs me-2"></i>Operational Risk</h5>
+                            <div class="metric-card">
+                                <div class="metric-value">${{ "%.1f"|format(treasury_stats.risk_metrics.operational_risk.operational_var / 1000000) }}M</div>
+                                <div class="metric-label">Op VaR</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value">{{ "%.1f"|format(treasury_stats.risk_metrics.operational_risk.process_automation) }}%</div>
+                                <div class="metric-label">Automation</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="action-card">
+                            <h5><i class="fas fa-shield-alt me-2"></i>Risk Management Actions</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <button class="btn btn-primary w-100" onclick="createInterestRateHedge()">
+                                        <i class="fas fa-shield-alt me-2"></i>Create IR Hedge
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-warning w-100" onclick="performStressTest()">
+                                        <i class="fas fa-vial me-2"></i>Stress Test
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-info w-100" onclick="analyzeRiskMetrics()">
+                                        <i class="fas fa-chart-area me-2"></i>Risk Analysis
+                                    </button>
+                                </div>
+                                <div class="col-md-3">
+                                    <button class="btn btn-success w-100" onclick="generateRiskReport()">
+                                        <i class="fas fa-file-alt me-2"></i>Risk Report
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Tab -->
+            <div class="tab-pane fade" id="analytics" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Performance Analytics</h5>
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="chart-container">
+                            <h5 class="chart-title">Capital Allocation</h5>
+                            <canvas id="capitalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="action-card">
+                            <h5><i class="fas fa-chart-bar me-2"></i>Treasury Performance Metrics</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.profit_optimization.current_performance.net_interest_income / 1000000) }}M</div>
+                                        <div class="metric-label">Net Interest Income</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.profit_optimization.current_performance.investment_income / 1000000) }}M</div>
+                                        <div class="metric-label">Investment Income</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">${{ "%.1f"|format(treasury_stats.profit_optimization.current_performance.funding_cost / 1000000) }}M</div>
+                                        <div class="metric-label">Funding Cost</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="metric-card">
+                                        <div class="metric-value">{{ "%.1f"|format(treasury_stats.profit_optimization.roi_metrics.profit_improvement_percentage) }}%</div>
+                                        <div class="metric-label">Profit Improvement</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bond Trading Modal -->
+    <div class="modal fade" id="bondTradeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-certificate me-2"></i>Treasury Bond Trading
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="bondTradeForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Bond Type</label>
+                                    <select class="form-control" id="bondType" required>
+                                        <option value="">Select Bond Type</option>
+                                        <option value="treasury_2y">2-Year Treasury</option>
+                                        <option value="treasury_5y">5-Year Treasury</option>
+                                        <option value="treasury_10y">10-Year Treasury</option>
+                                        <option value="treasury_30y">30-Year Treasury</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Trade Type</label>
+                                    <select class="form-control" id="tradeType" required>
+                                        <option value="">Select Trade Type</option>
+                                        <option value="buy">Buy</option>
+                                        <option value="sell">Sell</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Quantity (Face Value)</label>
+                                    <input type="number" class="form-control" id="quantity" min="1000000" step="1000000" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Price</label>
+                                    <input type="number" class="form-control" id="price" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Settlement Date</label>
+                                    <input type="date" class="form-control" id="settlementDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Counterparty</label>
+                                    <input type="text" class="form-control" id="counterparty" placeholder="Enter counterparty name">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Trade Notes</label>
+                            <textarea class="form-control" id="tradeNotes" rows="3" placeholder="Enter trade notes or comments"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="executeBondTrade()">
+                        <i class="fas fa-exchange-alt me-2"></i>Execute Trade
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interest Rate Hedge Modal -->
+    <div class="modal fade" id="hedgeModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-shield-alt me-2"></i>Interest Rate Hedge
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="hedgeForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Hedge Type</label>
+                                    <select class="form-control" id="hedgeType" required>
+                                        <option value="">Select Hedge Type</option>
+                                        <option value="interest_rate_swap">Interest Rate Swap</option>
+                                        <option value="forward_rate_agreement">Forward Rate Agreement</option>
+                                        <option value="interest_rate_cap">Interest Rate Cap</option>
+                                        <option value="interest_rate_floor">Interest Rate Floor</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Notional Amount</label>
+                                    <input type="number" class="form-control" id="notionalAmount" min="1000000" step="1000000" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Fixed Rate (%)</label>
+                                    <input type="number" class="form-control" id="fixedRate" min="0" step="0.01" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Maturity (Years)</label>
+                                    <input type="number" class="form-control" id="maturity" min="1" max="30" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Hedge Objective</label>
+                            <textarea class="form-control" id="hedgeObjective" rows="3" placeholder="Describe the hedging objective"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createHedge()">
+                        <i class="fas fa-shield-alt me-2"></i>Create Hedge
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-2">Processing request...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Initialize charts
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            loadRealTimeData();
+            
+            // Auto-refresh data every 30 seconds
+            setInterval(loadRealTimeData, 30000);
+        });
+
+        function initializeCharts() {
+            // Cash Flow Chart
+            const cashflowCtx = document.getElementById('cashflowChart');
+            if (cashflowCtx) {
+                new Chart(cashflowCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['30 Days', '90 Days', '365 Days'],
+                        datasets: [{
+                            label: 'Inflows',
+                            data: [{{ treasury_stats.cash_flow_forecast.next_30_days.inflows }}, 
+                                   {{ treasury_stats.cash_flow_forecast.next_90_days.inflows }}, 
+                                   {{ treasury_stats.cash_flow_forecast.next_365_days.inflows }}],
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1
+                        }, {
+                            label: 'Outflows',
+                            data: [{{ treasury_stats.cash_flow_forecast.next_30_days.outflows }}, 
+                                   {{ treasury_stats.cash_flow_forecast.next_90_days.outflows }}, 
+                                   {{ treasury_stats.cash_flow_forecast.next_365_days.outflows }}],
+                            borderColor: 'rgb(255, 99, 132)',
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return '$' + (value / 1000000).toFixed(0) + 'M';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart');
+            if (performanceCtx) {
+                new Chart(performanceCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['NII', 'Investment Income', 'Funding Cost'],
+                        datasets: [{
+                            label: 'Current ($M)',
+                            data: [{{ treasury_stats.profit_optimization.current_performance.net_interest_income / 1000000 }},
+                                   {{ treasury_stats.profit_optimization.current_performance.investment_income / 1000000 }},
+                                   {{ treasury_stats.profit_optimization.current_performance.funding_cost / 1000000 }}],
+                            backgroundColor: 'rgba(54, 162, 235, 0.8)'
+                        }, {
+                            label: 'Optimized ($M)',
+                            data: [{{ treasury_stats.profit_optimization.optimized_performance.projected_nii / 1000000 }},
+                                   {{ treasury_stats.profit_optimization.optimized_performance.projected_investment_income / 1000000 }},
+                                   {{ treasury_stats.profit_optimization.optimized_performance.projected_funding_cost / 1000000 }}],
+                            backgroundColor: 'rgba(75, 192, 192, 0.8)'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Capital Allocation Chart
+            const capitalCtx = document.getElementById('capitalChart');
+            if (capitalCtx) {
+                new Chart(capitalCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Loans', 'Investments', 'Trading', 'Other'],
+                        datasets: [{
+                            data: [70, 15, 5, 10],
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 205, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function loadRealTimeData() {
+            // Simulate real-time data updates
+            console.log('Loading real-time data...');
+        }
+
+        function showLoading() {
+            document.getElementById('loadingSpinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingSpinner').style.display = 'none';
+        }
+
+        function showBondTradeModal() {
+            const modal = new bootstrap.Modal(document.getElementById('bondTradeModal'));
+            modal.show();
+        }
+
+        function executeBondTrade() {
+            showLoading();
+            
+            const formData = {
+                bond_type: document.getElementById('bondType').value,
+                trade_type: document.getElementById('tradeType').value,
+                quantity: document.getElementById('quantity').value,
+                price: document.getElementById('price').value,
+                settlement_date: document.getElementById('settlementDate').value,
+                counterparty: document.getElementById('counterparty').value,
+                notes: document.getElementById('tradeNotes').value
+            };
+
+            fetch('/api/treasury/bonds/trade', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.trade_id) {
+                    alert('Bond trade executed successfully! Trade ID: ' + data.trade_id);
+                    bootstrap.Modal.getInstance(document.getElementById('bondTradeModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error executing trade: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error executing trade: ' + error.message);
+            });
+        }
+
+        function createInterestRateHedge() {
+            const modal = new bootstrap.Modal(document.getElementById('hedgeModal'));
+            modal.show();
+        }
+
+        function createHedge() {
+            showLoading();
+            
+            const formData = {
+                hedge_type: document.getElementById('hedgeType').value,
+                notional_amount: document.getElementById('notionalAmount').value,
+                fixed_rate: document.getElementById('fixedRate').value,
+                maturity: document.getElementById('maturity').value,
+                objective: document.getElementById('hedgeObjective').value
+            };
+
+            fetch('/api/treasury/interest_rate/hedge', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.hedge_id) {
+                    alert('Interest rate hedge created successfully! Hedge ID: ' + data.hedge_id);
+                    bootstrap.Modal.getInstance(document.getElementById('hedgeModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error creating hedge: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error creating hedge: ' + error.message);
+            });
+        }
+
+        function optimizePortfolio() {
+            showLoading();
+            
+            fetch('/api/treasury/investments/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({optimization_type: 'portfolio'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.optimization_id) {
+                    alert('Portfolio optimization completed! Expected profit improvement: $' + 
+                          (data.profit_improvement / 1000000).toFixed(1) + 'M');
+                } else {
+                    alert('Error optimizing portfolio: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error optimizing portfolio: ' + error.message);
+            });
+        }
+
+        function optimizeFunding() {
+            showLoading();
+            
+            fetch('/api/treasury/funding/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({optimization_type: 'funding'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.optimization_id) {
+                    alert('Funding optimization completed! Expected cost savings: $' + 
+                          (data.cost_savings / 1000000).toFixed(1) + 'M');
+                } else {
+                    alert('Error optimizing funding: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error optimizing funding: ' + error.message);
+            });
+        }
+
+        function optimizeCashFlow() {
+            showLoading();
+            
+            fetch('/api/treasury/cashflow/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({optimization_type: 'cashflow'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.optimization_id) {
+                    alert('Cash flow optimization completed! Expected profit increase: $' + 
+                          (data.expected_profit_increase / 1000000).toFixed(1) + 'M');
+                } else {
+                    alert('Error optimizing cash flow: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error optimizing cash flow: ' + error.message);
+            });
+        }
+
+        function optimizeALM() {
+            showLoading();
+            
+            fetch('/api/treasury/alm/optimize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({optimization_type: 'alm'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.optimization_id) {
+                    alert('ALM optimization completed! Expected profit improvement: $' + 
+                          (data.profit_improvement / 1000000).toFixed(1) + 'M');
+                } else {
+                    alert('Error optimizing ALM: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error optimizing ALM: ' + error.message);
+            });
+        }
+
+        function performStressTest() {
+            showLoading();
+            
+            fetch('/api/treasury/stress/test', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({test_type: 'comprehensive'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.test_id) {
+                    alert('Stress test completed successfully! Results show bank can survive ' + 
+                          data.survival_period + ' days under stress.');
+                } else {
+                    alert('Error performing stress test: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error performing stress test: ' + error.message);
+            });
+        }
+
+        function analyzeRiskMetrics() {
+            showLoading();
+            
+            fetch('/api/treasury/risk/analysis', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                alert('Risk analysis completed! Overall risk level: ' + data.overall_risk_level);
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error analyzing risk metrics: ' + error.message);
+            });
+        }
+
+        function generateRiskReport() {
+            showLoading();
+            
+            fetch('/api/treasury/reports/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({report_type: 'risk_management'})
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                if (data.report_id) {
+                    alert('Risk report generated successfully! Report ID: ' + data.report_id);
+                } else {
+                    alert('Error generating report: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error generating report: ' + error.message);
+            });
+        }
+
+        function tradeBonds(maturity) {
+            showBondTradeModal();
+            // Pre-populate bond type based on maturity
+            if (maturity === 'short_term') {
+                document.getElementById('bondType').value = 'treasury_2y';
+            } else if (maturity === 'medium_term') {
+                document.getElementById('bondType').value = 'treasury_5y';
+            } else if (maturity === 'long_term') {
+                document.getElementById('bondType').value = 'treasury_30y';
+            }
+        }
+
+        function analyzeBondPortfolio() {
+            showLoading();
+            
+            fetch('/api/treasury/bonds/analysis', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                hideLoading();
+                alert('Bond portfolio analysis completed! Average duration: ' + 
+                      data.average_duration + ' years, Total yield: ' + 
+                      data.portfolio_yield + '%');
+            })
+            .catch(error => {
+                hideLoading();
+                alert('Error analyzing bond portfolio: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html> 
